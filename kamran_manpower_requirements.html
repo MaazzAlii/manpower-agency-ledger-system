@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Business Requirements Form</title>
+<script>
+(function() {
+  try {
+    const pref = localStorage.getItem("theme_pref") || "auto";
+    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const t = pref === "auto" ? (isDark ? "dark" : "light") : pref;
+    document.documentElement.setAttribute("data-theme", t);
+  } catch(e) {}
+})();
+</script>
 <style>
 :root{--navy:#14284b;--accent:#2a7f62;--bg:#faf9f6;--card:#fff;--line:#e3e1dc;--text:#1d2433;--muted:#5b6474;--err:#b3261e;--ok:#1e7a46}
 *{box-sizing:border-box}
@@ -62,7 +72,9 @@ input:focus,select:focus,textarea:focus,button:focus{outline:3px solid #9ec5b5;o
 html[dir=rtl] .row{direction:rtl}
 html[dir=rtl] input[type=email],html[dir=rtl] input[type=tel],html[dir=rtl] input[type=url],html[dir=rtl] input[type=number],html[dir=rtl] input[type=date]{direction:ltr;text-align:left}
 input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],input[type=date],select,textarea{font-size:16px}
-.btn,.opts label,.lang select{touch-action:manipulation}
+.btn,.opts label,.lang select,.theme-box select{touch-action:manipulation}
+.ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ctrls select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
 @media (max-width:520px){
   .wrap{padding:12px 12px calc(16px + env(safe-area-inset-bottom))}
   .card{padding:16px;border-radius:14px}
@@ -70,18 +82,30 @@ input[type=text],input[type=email],input[type=tel],input[type=number],input[type
   .row{grid-template-columns:1fr}
   .nav{position:sticky;bottom:0;background:var(--bg);padding:10px 0 calc(10px + env(safe-area-inset-bottom));margin-top:12px;z-index:5}
   .nav .btn{flex:1}
-  .lang{width:100%}
-  .lang select{width:100%}
+  .ctrls{width:100%;justify-content:space-between}
+  .ctrls select{flex:1}
 }
 @media (min-width:900px){.wrap{max-width:760px;padding-top:28px}}
+:root[data-theme="dark"]{
+  --bg:#0f1420;--card:#171e2e;--line:#2c3550;--text:#e9ecf4;--muted:#a3acc2;--navy:#dbe4ff;--accent:#5fc3a0;--err:#ff8a80;--ok:#7ce3a8
+}
+:root[data-theme="dark"] .btn{color:#0f1420;background:var(--navy);border-color:var(--navy)}
+:root[data-theme="dark"] .btn.alt,:root[data-theme="dark"] .social a,:root[data-theme="dark"] input[type=text],:root[data-theme="dark"] input[type=email],:root[data-theme="dark"] input[type=tel],:root[data-theme="dark"] input[type=number],:root[data-theme="dark"] input[type=url],:root[data-theme="dark"] input[type=date],:root[data-theme="dark"] select,:root[data-theme="dark"] textarea,:root[data-theme="dark"] .ctrls select{background:#101726;color:var(--text)}
+:root[data-theme="dark"] .btn.alt{color:var(--text);background:transparent;border-color:var(--line)}
+:root[data-theme="dark"] .opts label:hover{background:#1d2539}
+:root[data-theme="dark"] .opts label:focus-within{background:#1a2a33}
+:root[data-theme="dark"] .banner.ok{background:#16352a}
+:root[data-theme="dark"] .banner.bad{background:#3a1d1b}
+
 @media (prefers-color-scheme:dark){
-  :root{--bg:#0f1420;--card:#171e2e;--line:#2c3550;--text:#e9ecf4;--muted:#a3acc2;--navy:#dbe4ff;--accent:#5fc3a0;--err:#ff8a80;--ok:#7ce3a8}
-  .btn{color:#0f1420;background:var(--navy);border-color:var(--navy)}
-  .btn.alt,.social a,input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],input[type=date],select,textarea,.lang select{background:#101726;color:var(--text)}
-  .btn.alt{color:var(--text);background:transparent;border-color:var(--line)}
-  .opts label:hover{background:#1d2539}
-  .opts label:focus-within{background:#1a2a33}
-  .banner.ok{background:#16352a}.banner.bad{background:#3a1d1b}
+  :root:not([data-theme="light"]):not([data-theme="dark"]){--bg:#0f1420;--card:#171e2e;--line:#2c3550;--text:#e9ecf4;--muted:#a3acc2;--navy:#dbe4ff;--accent:#5fc3a0;--err:#ff8a80;--ok:#7ce3a8}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .btn{color:#0f1420;background:var(--navy);border-color:var(--navy)}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .btn.alt,:root:not([data-theme="light"]):not([data-theme="dark"]) .social a,:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=text],:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=email],:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=tel],:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=number],:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=url],:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=date],:root:not([data-theme="light"]):not([data-theme="dark"]) select,:root:not([data-theme="light"]):not([data-theme="dark"]) textarea,:root:not([data-theme="light"]):not([data-theme="dark"]) .ctrls select{background:#101726;color:var(--text)}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .btn.alt{color:var(--text);background:transparent;border-color:var(--line)}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .opts label:hover{background:#1d2539}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .opts label:focus-within{background:#1a2a33}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .banner.ok{background:#16352a}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .banner.bad{background:#3a1d1b}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -93,13 +117,23 @@ input[type=text],input[type=email],input[type=tel],input[type=number],input[type
       <h1 id="title"></h1>
       <p class="sub" id="subtitle"></p>
     </div>
-    <div class="lang">
-      <label for="langSel" class="sr" style="font-size:.8rem;color:var(--muted)">Language / زبان</label>
-      <select id="langSel" aria-label="Language">
-        <option value="en">English</option>
-        <option value="ur">اردو</option>
-        <option value="ru">Roman Urdu</option>
-      </select>
+    <div class="ctrls">
+      <div class="theme-box">
+        <label for="themeSel" class="sr" style="font-size:.8rem;color:var(--muted)">Theme / تھیم</label>
+        <select id="themeSel" aria-label="Theme mode" onchange="setTheme(this.value)">
+          <option value="auto">💻 System / سسٹم</option>
+          <option value="light">☀️ Light / روشن</option>
+          <option value="dark">🌙 Dark / ڈارک</option>
+        </select>
+      </div>
+      <div class="lang">
+        <label for="langSel" class="sr" style="font-size:.8rem;color:var(--muted)">Language / زبان</label>
+        <select id="langSel" aria-label="Language">
+          <option value="en">English</option>
+          <option value="ur">اردو</option>
+          <option value="ru">Roman Urdu</option>
+        </select>
+      </div>
     </div>
   </header>
 
@@ -616,12 +650,18 @@ function renderReview(root) {
   const dl = el("button", "btn ghost", t.download);
   dl.type = "button";
   dl.addEventListener("click", downloadJson);
+
+  const dlXls = el("a", "btn ghost", S.lang === "ur" ? "ایکسل ٹیمپلیٹ ڈاؤنلوڈ کریں (.xlsx)" : (S.lang === "ru" ? "Excel Template Download (.xlsx)" : "Download Excel Template (.xlsx)"));
+  dlXls.href = "Manpower_Agency_Requirements_and_System_Templates.xlsx";
+  dlXls.setAttribute("download", "Manpower_Agency_Requirements_and_System_Templates.xlsx");
+  dlXls.style.textDecoration = "underline";
+
   const rs = el("button", "btn ghost", t.reset);
   rs.type = "button";
   rs.addEventListener("click", () => {
     if (confirm(t.resetConfirm)) { localStorage.removeItem(KEY); S = FRESH(); render(); setSave(""); }
   });
-  tools.append(dl, rs);
+  tools.append(dl, dlXls, rs);
   root.append(tools);
 
   const banner = el("div", "banner", "");
@@ -709,8 +749,26 @@ async function submitRequirements() {
   }
 }
 
+/* ============ THEME CONTROLLER ============ */
+function setTheme(mode) {
+  try { localStorage.setItem("theme_pref", mode); } catch(e) {}
+  applyTheme(mode);
+}
+function applyTheme(mode) {
+  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const t = mode === "auto" ? (isDark ? "dark" : "light") : mode;
+  document.documentElement.setAttribute("data-theme", t);
+  if ($("themeSel")) $("themeSel").value = mode;
+}
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+  const pref = localStorage.getItem("theme_pref") || "auto";
+  if (pref === "auto") applyTheme("auto");
+});
+
 /* ============ INIT ============ */
 function init() {
+  const savedTheme = localStorage.getItem("theme_pref") || "auto";
+  applyTheme(savedTheme);
   const had = restore();
   $("langSel").addEventListener("change", e => {
     S.lang = e.target.value; persist(); render();

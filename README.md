@@ -98,9 +98,17 @@ Users can seamlessly toggle between three language modes at any point without lo
   - Semantic HTML (`fieldset`, `legend`, `input`, `select`).
   - Screen-reader friendly with high-contrast text ratios (WCAG AA).
   - Touch targets $\ge 44\text{px}$ for mobile usability.
-- **Data Integrations**:
+- **Theme Support**:
+  - Manual Header Toggle: `💻 System Default`, `☀️ Light Mode`, `🌙 Dark Mode`.
+  - Automatic `prefers-color-scheme` synchronization and `localStorage` persistence.
+- **Data Integrations & Offline Excel**:
   - Configurable Webhook endpoint (`CONFIG.endpoint`) for direct Google Sheets / Apps Script / Make.com submission.
   - Instant **Download JSON** payload button for offline analysis.
+  - Included **[Manpower_Agency_Requirements_and_System_Templates.xlsx](Manpower_Agency_Requirements_and_System_Templates.xlsx)** workbook with 4 ready-to-use sheets:
+    1. `Requirements_Questionnaire` (All 45 questions formatted for offline client answers)
+    2. `Worker_Database_Template` (Worker master file with margin calculations)
+    3. `Daily_Timesheet_Template` (Daily hours, overtime, worker pay vs company bill)
+    4. `Monthly_Billing_&_PnL` (Monthly gross & net profit summary with formulas)
 
 ---
 
