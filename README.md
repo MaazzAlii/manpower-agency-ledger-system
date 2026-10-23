@@ -102,8 +102,10 @@ Users can seamlessly toggle between three language modes at any point without lo
   - Manual Header Toggle: `💻 System Default`, `☀️ Light Mode`, `🌙 Dark Mode`.
   - Automatic `prefers-color-scheme` synchronization and `localStorage` persistence.
 - **Data Integrations & Webhook**:
-  - **Live n8n Webhook**: Connected to `https://rahmat.n8n.calara.agency/webhook/kamran-requirements` to automatically trigger workflows, forward entries to Google Sheets, send Telegram/WhatsApp alerts, or dispatch notification emails.
-  - Instant **Download JSON** payload button for offline analysis.
+  - **Live n8n Webhook**: Connected to `https://rahmat.n8n.calara.agency/webhook/kamran-requirements` with intelligent dual-mode fallback (production `/webhook/` & canvas testing `/webhook-test/`). Automatically triggers workflows to sync to Google Sheets, Telegram, or email.
+  - **📲 WhatsApp Summary Button**: One-click sharing of requirements directly to Kamran or client via WhatsApp.
+  - **🖨️ Print / Save PDF**: Print-optimized stylesheet for generating professional 2-page PDF proposals directly from the browser.
+  - **Instant Download JSON**: Export clean JSON payload containing all 10 discovery sections.
   - Included **[Manpower_Agency_Requirements_and_System_Templates.xlsx](Manpower_Agency_Requirements_and_System_Templates.xlsx)** workbook with 4 ready-to-use sheets:
     1. `Requirements_Questionnaire` (All 45 questions formatted for offline client answers)
     2. `Worker_Database_Template` (Worker master file with margin calculations)
