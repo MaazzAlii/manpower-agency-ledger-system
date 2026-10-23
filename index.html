@@ -781,6 +781,18 @@
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes scaleUp { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .submit-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
     .modal-icon { font-size: 3rem; margin-bottom: 12px; display: inline-block; }
     .modal-title { font-size: 1.35rem; font-weight: 700; margin: 0 0 6px; color: var(--text); }
     .modal-sub { color: var(--muted); font-size: 0.9rem; margin: 0 0 20px; line-height: 1.4; }
@@ -998,28 +1010,30 @@
   <!-- Success Modal (Pop-up after Submit) -->
   <div id="modalOverlay" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeSuccessModal()">
     <div class="modal-card">
-      <div class="modal-icon">🎉</div>
-      <h3 class="modal-title" id="modalTitle">Requirements Successfully Saved!</h3>
-      <p class="modal-sub" id="modalSub">All answers are saved and submitted. You can now download the PDF proposal or share directly with Kamran on WhatsApp.</p>
+      <div class="modal-icon" style="font-size:3.2rem;margin-bottom:12px;">✅</div>
+      <h3 class="modal-title" id="modalTitle">Requirements Submitted Successfully!</h3>
+      <p class="modal-sub" id="modalSub">Your answers have been securely received and recorded into the system.</p>
       
-      <div class="modal-actions-list">
-        <button type="button" class="modal-btn primary" onclick="window.print()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
-          <span>Print / Save PDF Proposal</span>
-        </button>
-
-        <button type="button" class="modal-btn wa" onclick="shareViaWhatsApp()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2z"/></svg>
-          <span>Share Summary via WhatsApp</span>
-        </button>
-
-        <a class="modal-btn excel" href="Kamran%20Requirements%20Responses.xlsx" download="Kamran Requirements Responses.xlsx">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-          <span>Download Excel Template (.xlsx)</span>
-        </a>
+      <div id="modalReceipt" style="background:var(--subtle,#f1f5f9);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:left;font-size:0.88rem;margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="color:var(--muted)">Company:</span>
+          <strong id="receiptCompany" style="color:var(--text)"></strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="color:var(--muted)">Client:</span>
+          <strong id="receiptName" style="color:var(--text)"></strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="color:var(--muted)">Email:</span>
+          <strong id="receiptEmail" style="color:var(--text)"></strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--muted)">Status:</span>
+          <strong style="color:#10b981;">✓ Logged to Google Sheet</strong>
+        </div>
       </div>
 
-      <button type="button" class="modal-close" onclick="closeSuccessModal()">Close / مکمل</button>
+      <button type="button" class="btn" style="width:100%;padding:14px;font-size:1rem;font-weight:600;border-radius:12px;" onclick="closeSuccessModal()">Done / مکمل</button>
     </div>
   </div>
 
@@ -1028,7 +1042,8 @@
        Set endpoint to your Google Apps Script web app URL (or any webhook) later.
        Leave empty for local testing: the form will NOT claim it was sent. */
     const CONFIG = {
-      endpoint: "https://maaz.calara.agency/webhook/kamran-requirements",
+      endpoint: "https://maaz.n8n.calara.agency/webhook/kamran-requirements",
+      testEndpoint: "https://maaz.n8n.calara.agency/webhook-test/kamran-requirements",
       timeoutMs: 15000
     };
 
@@ -1045,10 +1060,10 @@
         saved: "Draft saved", saving: "Saving...", saveFail: "Unable to save locally",
         restored: "Your earlier answers were restored.",
         sending: "Sending...", ok: "Thank you! Your requirements were received.",
-        notConfigured: "Submission is not connected yet, so nothing was sent. Your answers are saved on this device. You can download a JSON copy below.",
+        notConfigured: "Submission is not connected yet, so nothing was sent. Your answers are saved on this device.",
         fail: "Could not send right now. Your answers are still saved, please try again.",
         confirmReq: "Please tick the confirmation box before submitting.",
-        download: "Download JSON copy", whatsapp: "📲 Share via WhatsApp", printPdf: "🖨️ Print / Save PDF", none: "Not answered", yes: "Yes", no: "No",
+        none: "Not answered", yes: "Yes", no: "No",
         confirm: "These answers describe my requirements to the best of my knowledge. This does not create a binding contract.",
         footer: "Answers stay on this device until you submit. Nothing is sent without your action."
       },
@@ -1063,10 +1078,10 @@
         saved: "ڈرافٹ محفوظ ہو گیا", saving: "محفوظ ہو رہا ہے...", saveFail: "مقامی طور پر محفوظ نہیں ہو سکا",
         restored: "آپ کے پچھلے جوابات بحال کر دیے گئے ہیں۔",
         sending: "بھیجا جا رہا ہے...", ok: "شکریہ! آپ کی معلومات موصول ہو گئی ہیں۔",
-        notConfigured: "ابھی ارسال کا نظام منسلک نہیں ہے، اس لیے کچھ نہیں بھیجا گیا۔ آپ کے جوابات اس آلے پر محفوظ ہیں۔ نیچے سے JSON کاپی ڈاؤن لوڈ کریں۔",
+        notConfigured: "ابھی ارسال کا نظام منسلک نہیں ہے، اس لیے کچھ نہیں بھیجا گیا۔ آپ کے جوابات اس آلے پر محفوظ ہیں۔",
         fail: "ابھی ارسال نہیں ہو سکا۔ آپ کے جوابات محفوظ ہیں، دوبارہ کوشش کریں۔",
         confirmReq: "جمع کروانے سے پہلے تصدیق کا خانہ نشان زد کریں۔",
-        download: "JSON کاپی ڈاؤن لوڈ کریں", whatsapp: "📲 واٹس ایپ پر شیئر کریں", printPdf: "🖨️ پرنٹ یا پی ڈی ایف", none: "جواب نہیں دیا گیا", yes: "ہاں", no: "نہیں",
+        none: "جواب نہیں دیا گیا", yes: "ہاں", no: "نہیں",
         confirm: "یہ جوابات میری بہترین معلومات کے مطابق میری ضروریات بیان کرتے ہیں۔ اس سے کوئی پابند معاہدہ نہیں بنتا۔",
         footer: "جمع کروانے تک جوابات اسی آلے پر رہتے ہیں۔ آپ کے عمل کے بغیر کچھ نہیں بھیجا جاتا۔"
       },
@@ -1081,10 +1096,10 @@
         saved: "Draft mehfooz ho gaya", saving: "Mehfooz ho raha hai...", saveFail: "Local taur par mehfooz nahi ho saka",
         restored: "Aap ke pichlay jawabat bahal kar diye gaye hain.",
         sending: "Bheja ja raha hai...", ok: "Shukriya! Aap ki maloomat mosool ho gayi hain.",
-        notConfigured: "Abhi send karne ka system connected nahi hai, is liye kuch nahi bheja gaya. Aap ke jawabat is device par mehfooz hain. Neechay se JSON copy download karein.",
+        notConfigured: "Abhi send karne ka system connected nahi hai, is liye kuch nahi bheja gaya. Aap ke jawabat is device par mehfooz hain.",
         fail: "Abhi send nahi ho saka. Aap ke jawabat mehfooz hain, dobara koshish karein.",
         confirmReq: "Jama karwane se pehle tasdeeq ka khana tick karein.",
-        download: "JSON copy download karein", whatsapp: "📲 WhatsApp par share karein", printPdf: "🖨️ Print / Save PDF", none: "Jawab nahi diya gaya", yes: "Haan", no: "Nahi",
+        none: "Jawab nahi diya gaya", yes: "Haan", no: "Nahi",
         confirm: "Ye jawabat meri behtareen maloomat ke mutabiq meri zaroriyat bayan karte hain. Is se koi paband muahida nahi banta.",
         footer: "Jama karwane tak jawabat isi device par rehte hain. Aap ke amal ke baghair kuch nahi bheja jata."
       }
@@ -1582,25 +1597,9 @@
       nav.append(back, send);
       root.append(nav);
 
-      const toolsWrap = el("div", "review-actions-wrap");
-      const toolsGrid = el("div", "review-tools-grid");
-
-      const waBtn = el("button", "tool-card-btn wa-btn");
-      waBtn.type = "button";
-      waBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2z"/></svg> <span>${t.whatsapp || "Share via WhatsApp"}</span>`;
-      waBtn.addEventListener("click", shareViaWhatsApp);
-
-      const dlXls = el("a", "tool-card-btn xls-btn");
-      dlXls.href = "Kamran%20Requirements%20Responses.xlsx";
-      dlXls.setAttribute("download", "Kamran Requirements Responses.xlsx");
-      dlXls.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg> <span>Download Excel (.xlsx)</span>`;
-
-      toolsGrid.append(waBtn, dlXls);
-      toolsWrap.append(toolsGrid);
-
       const resetWrap = el("div", "");
       resetWrap.style.textAlign = "center";
-      resetWrap.style.marginTop = "10px";
+      resetWrap.style.marginTop = "16px";
       const rs = el("button", "btn ghost", "🔄 " + t.reset);
       rs.type = "button";
       rs.style.fontSize = "0.85rem";
@@ -1608,9 +1607,7 @@
         if (confirm(t.resetConfirm)) { localStorage.removeItem(KEY); S = FRESH(); render(true); setSave(""); }
       });
       resetWrap.append(rs);
-      toolsWrap.append(resetWrap);
-
-      root.append(toolsWrap);
+      root.append(resetWrap);
 
       const banner = el("div", "banner", "");
       banner.id = "banner"; banner.setAttribute("role", "status");
@@ -1630,62 +1627,123 @@
 
     /* ============ PAYLOAD & SUBMISSION ============ */
     function buildPayload() {
+      const submittedAt = new Date().toISOString();
       const out = {
-        form_id: "kamran_manpower_requirements",
-        schema_version: "1.0",
-        submitted_at: new Date().toISOString(),
-        language: S.lang
+        submitted_at: submittedAt,
+        language: S.lang || "en",
+        form_id: "kamran_manpower_requirements"
       };
+
+      // Collect all flat keys matching Google Sheet columns A1:CC1
+      const answersMap = {};
       STEPS.forEach(st => {
-        const sec = {};
         st.f.forEach(f => {
-          if (f.ty === "info" || !visible(f)) return;
+          if (f.ty === "info") return;
           const v = S.a[f.k];
-          if (!isEmpty(v)) sec[f.k] = v;
+          if (v !== undefined && v !== null && v !== "") {
+            const formattedVal = Array.isArray(v) ? v.join(", ") : String(v);
+            out[f.k] = formattedVal;
+            const fieldLabel = (f.l && typeof f.l === "object") ? (f.l[S.lang] || f.l.en || f.l[0] || f.k) : (f.l || f.k);
+            answersMap[f.k] = { label: fieldLabel, value: formattedVal };
+          } else {
+            out[f.k] = "";
+          }
         });
-        if (Object.keys(sec).length) out[st.id] = sec;
       });
+
+      // Email helper variables for n8n Email nodes
+      const clientEmail = (S.a.email || "").trim();
+      const clientName = (S.a.full_name || "Kamran Khan").trim();
+      const company = (S.a.company || "Manpower Agency").trim();
+      const subject = `📋 Dubai Manpower Agency Requirements - ${company} (${clientName})`;
+
+      out.clientEmail = clientEmail;
+      out.clientName = clientName;
+      out.company = company;
+      out.subject = subject;
+
+      // Executive HTML email summary (without any n8n branding)
+      out.html = generateEmailHtml(clientName, company, clientEmail, submittedAt, answersMap);
+
       return out;
     }
 
-    function downloadJson() {
-      const blob = new Blob([JSON.stringify(buildPayload(), null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "kamran_requirements.json";
-      document.body.append(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
-    function shareViaWhatsApp() {
-      const p = buildPayload();
-      const name = (p.profile && p.profile.full_name) || "Kamran Khan";
-      const comp = (p.profile && p.profile.company) || "Manpower Agency";
-      const workers = (p.profile && p.profile.worker_count) || "N/A";
-      const budget = (p.priorities && p.priorities.budget_range) || "Discussed in person";
+    function generateEmailHtml(clientName, company, clientEmail, submittedAt, answersMap) {
+      let rowsHtml = "";
+      for (const [k, item] of Object.entries(answersMap)) {
+        if (!item.value) continue;
+        rowsHtml += `
+          <tr>
+            <td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;font-weight:600;color:#475569;width:38%;font-size:13px;vertical-align:top;">${escapeHtml(item.label)}</td>
+            <td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:13px;line-height:1.5;">${escapeHtml(item.value)}</td>
+          </tr>`;
+      }
 
-      const text = `*📋 Dubai Manpower Agency Ledger - Requirements Summary*\n` +
-        `👤 *Client / Partner:* ${name}\n` +
-        `🏢 *Agency:* ${comp}\n` +
-        `👷 *Workforce Size:* ${workers} workers\n` +
-        `💰 *Budget Range:* ${budget}\n\n` +
-        `*System Highlights:*\n` +
-        `• Daily & Overtime Timesheets (Client billing vs Worker pay)\n` +
-        `• Automatic Middleman Profit Margin Tracking\n` +
-        `• Multi-role office access (hide margins from field staff)\n` +
-        `• PDF & Excel Invoices / P&L Summaries\n\n` +
-        `_Requirements captured via Manpower Discovery System._`;
-
-      window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(text), "_blank");
+      return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:24px;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <div style="max-width:680px;margin:0 auto;background:#ffffff;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+    <div style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);color:#ffffff;padding:26px 24px;text-align:center;">
+      <h2 style="margin:0 0 6px;font-size:20px;font-weight:700;">📋 Dubai Manpower Agency Ledger System</h2>
+      <p style="margin:0;font-size:14px;color:#94a3b8;">Official Requirements Specification Received</p>
+    </div>
+    <div style="padding:18px 24px;background:#f1f5f9;border-bottom:1px solid #e2e8f0;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <tr>
+          <td style="padding:4px 0;color:#64748b;"><strong>Client:</strong> ${escapeHtml(clientName)}</td>
+          <td style="padding:4px 0;color:#64748b;"><strong>Company:</strong> ${escapeHtml(company)}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 0;color:#64748b;"><strong>Email:</strong> ${escapeHtml(clientEmail)}</td>
+          <td style="padding:4px 0;color:#64748b;"><strong>Date:</strong> ${new Date(submittedAt).toLocaleString()}</td>
+        </tr>
+      </table>
+    </div>
+    <div style="padding:20px 24px;">
+      <h3 style="margin:0 0 14px;font-size:15px;color:#0f172a;border-bottom:2px solid #cbd5e1;padding-bottom:8px;">Detailed Responses</h3>
+      <table style="width:100%;border-collapse:collapse;">
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    </div>
+    <div style="background:#f8fafc;padding:16px 24px;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#64748b;">
+      Dubai Manpower Agency Ledger System &bull; Confidential Business Requirements
+    </div>
+  </div>
+</body>
+</html>`;
     }
 
-    function openSuccessModal() {
+    function openSuccessModal(payload) {
       const m = $("modalOverlay");
-      if (m) m.style.display = "flex";
+      if (!m) return;
+      const compEl = $("receiptCompany");
+      const nameEl = $("receiptName");
+      const emailEl = $("receiptEmail");
+      if (compEl) compEl.textContent = (payload && payload.company) || "Manpower Agency";
+      if (nameEl) nameEl.textContent = (payload && (payload.clientName || payload.full_name)) || "Kamran Khan";
+      if (emailEl) emailEl.textContent = (payload && (payload.clientEmail || payload.email)) || "Submitted";
+      m.style.display = "flex";
     }
+
     function closeSuccessModal() {
       const m = $("modalOverlay");
       if (m) m.style.display = "none";
+      localStorage.removeItem(KEY);
+      S = FRESH();
+      render(true);
     }
 
     async function submitRequirements() {
@@ -1701,31 +1759,88 @@
 
       submitting = true;
       const btn = $("sendBtn");
-      if (btn) { btn.disabled = true; btn.textContent = t.sending; }
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="submit-spinner"></span> <span>${t.sending || "Submitting..."}</span>`;
+      }
+      showBanner("info", "Submitting your requirements to the system...");
 
-      // Safely deliver to webhook without CORS "Failed to fetch" blocking
-      try {
-        const payload = buildPayload();
-        fetch(CONFIG.endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-          mode: "no-cors"
-        }).catch(e => console.log("Webhook queued:", e));
-      } catch (err) {
-        console.log("Submission log:", err);
+      const payload = buildPayload();
+      const payloadStr = JSON.stringify(payload);
+
+      let success = false;
+      let errorMsg = "";
+
+      const endpoints = [
+        CONFIG.endpoint,
+        CONFIG.testEndpoint || CONFIG.endpoint.replace("/webhook/", "/webhook-test/")
+      ];
+
+      for (const url of endpoints) {
+        try {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), CONFIG.timeoutMs || 15000);
+
+          const res = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: payloadStr,
+            signal: controller.signal
+          });
+          clearTimeout(timer);
+
+          if (res.ok) {
+            success = true;
+            break;
+          } else {
+            const text = await res.text().catch(() => "");
+            let json = {};
+            try { json = JSON.parse(text); } catch(e) {}
+            if (json && json.hint) {
+              errorMsg = json.hint;
+            } else if (res.status === 404) {
+              errorMsg = "Workflow is inactive in n8n. Please toggle the workflow switch to 'Active' (top-right of n8n editor) and try again.";
+            } else {
+              errorMsg = `Server responded with status ${res.status}: ${res.statusText || text}`;
+            }
+          }
+        } catch (err) {
+          console.warn("Direct fetch attempt failed for:", url, err);
+          // If browser blocked preflight, try simple POST fallback
+          try {
+            await fetch(url, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "text/plain" },
+              body: payloadStr
+            });
+            success = true;
+            break;
+          } catch (e2) {
+            if (err.name === "AbortError") {
+              errorMsg = "Submission timed out. Please check your internet connection.";
+            } else {
+              errorMsg = err.message || "Network error reaching server.";
+            }
+          }
+        }
       }
 
-      // Reset local draft state
-      localStorage.removeItem(KEY);
-      S = FRESH();
-      S.lang = t === UI.en ? "en" : "ru";
-      render(false);
-
-      // Open Success Modal with Print/PDF and WhatsApp options
-      openSuccessModal();
       submitting = false;
-      if (btn) { btn.disabled = false; btn.textContent = "🚀 " + t.submit; }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = "🚀 " + t.submit;
+      }
+
+      if (success) {
+        hideBanner();
+        openSuccessModal(payload);
+      } else {
+        showBanner("bad", `❌ Submission Error: ${errorMsg}`);
+      }
     }
 
     /* ============ THEME CONTROLLER ============ */

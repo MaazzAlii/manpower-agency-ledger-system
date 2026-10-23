@@ -101,11 +101,10 @@ Users can seamlessly toggle between two focused language modes via the top heade
   - Horizontal Icon Pills: `💻` (System), `☀️` (Light), `🌙` (Dark) — zero clutter, pure icons.
   - Automatic `prefers-color-scheme` synchronization and `localStorage` persistence.
 - **Data Integrations & Webhook**:
-  - **Live n8n Webhook**: Connected to `https://maaz.calara.agency/webhook/kamran-requirements`. Automatically triggers workflows to sync to Google Sheets, Telegram, or email.
-  - **🎉 Success Modal Pop-up**: Automatically presents high-converting next steps after submission:
-    - **🖨️ Print / Save PDF Proposal**: Instant print-to-PDF proposal formatting.
-    - **📲 Share via WhatsApp**: One-click sharing with pre-formatted client summary.
-    - **📊 Download Excel Response Template**: Direct link to [`Kamran Requirements Responses.xlsx`](Kamran%20Requirements%20Responses.xlsx).
+  - **Live n8n Webhook**: Connected to `https://maaz.n8n.calara.agency/webhook/kamran-requirements`. Real-time HTTP delivery with failure protection and test-mode fallback.
+  - **✅ Verified Success Receipt**: Displays genuine delivery confirmation receipt showing client name, company, email, and live system status. Answers remain safely protected in browser storage until confirmed delivery.
+  - **Auto-Mapping Google Sheet Integration**: Payload provides flattened top-level keys matching spreadsheet columns (`A1:CC1`) for 1-click Auto-Mapping in n8n.
+  - **Automated Email Dispatch**: Sends pre-rendered, responsive HTML summaries to both the client and administrative inbox.
   - **💬 Floating WhatsApp Widget**: Direct instant chat with developer Maaz Ali (`+92 337 7233444`).
 
 ---
