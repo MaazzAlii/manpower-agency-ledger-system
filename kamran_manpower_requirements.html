@@ -72,9 +72,29 @@ input:focus,select:focus,textarea:focus,button:focus{outline:3px solid #9ec5b5;o
 html[dir=rtl] .row{direction:rtl}
 html[dir=rtl] input[type=email],html[dir=rtl] input[type=tel],html[dir=rtl] input[type=url],html[dir=rtl] input[type=number],html[dir=rtl] input[type=date]{direction:ltr;text-align:left}
 input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],input[type=date],select,textarea{font-size:16px}
-.btn,.opts label,.lang select,.theme-box select{touch-action:manipulation}
+.btn,.opts label,.pill-btn{touch-action:manipulation}
 .ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.ctrls select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.pill-group{display:inline-flex;align-items:center;background:var(--line);border-radius:24px;padding:3px;gap:2px}
+.pill-btn{
+  background:transparent;
+  border:0;
+  border-radius:20px;
+  padding:6px 12px;
+  font-size:.88rem;
+  font-weight:600;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all .15s ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+  min-height:34px;
+}
+.pill-btn:hover{color:var(--text);background:rgba(255,255,255,0.08)}
+.pill-btn.active{background:var(--card);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.18)}
+:root[data-theme="light"] .pill-btn.active{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(0,0,0,0.12)}
+:root[data-theme="dark"] .pill-btn.active{background:#1e283d;color:#fff}
 @media (max-width:520px){
   .wrap{padding:12px 12px calc(16px + env(safe-area-inset-bottom))}
   .card{padding:16px;border-radius:14px}
@@ -82,8 +102,7 @@ input[type=text],input[type=email],input[type=tel],input[type=number],input[type
   .row{grid-template-columns:1fr}
   .nav{position:sticky;bottom:0;background:var(--bg);padding:10px 0 calc(10px + env(safe-area-inset-bottom));margin-top:12px;z-index:5}
   .nav .btn{flex:1}
-  .ctrls{width:100%;justify-content:space-between}
-  .ctrls select{flex:1}
+  .ctrls{width:100%;justify-content:space-between;gap:6px}
 }
 @media (min-width:900px){.wrap{max-width:760px;padding-top:28px}}
 :root[data-theme="dark"]{
@@ -127,21 +146,14 @@ input[type=text],input[type=email],input[type=tel],input[type=number],input[type
       <p class="sub" id="subtitle"></p>
     </div>
     <div class="ctrls">
-      <div class="theme-box">
-        <label for="themeSel" class="sr" style="font-size:.8rem;color:var(--muted)">Theme / تھیم</label>
-        <select id="themeSel" aria-label="Theme mode" onchange="setTheme(this.value)">
-          <option value="auto">💻 System / سسٹم</option>
-          <option value="light">☀️ Light / روشن</option>
-          <option value="dark">🌙 Dark / ڈارک</option>
-        </select>
+      <div class="pill-group" role="group" aria-label="Theme mode">
+        <button type="button" class="pill-btn" id="theme-auto" title="System" onclick="setTheme('auto')" aria-label="System Theme">💻</button>
+        <button type="button" class="pill-btn" id="theme-light" title="Light" onclick="setTheme('light')" aria-label="Light Theme">☀️</button>
+        <button type="button" class="pill-btn" id="theme-dark" title="Dark" onclick="setTheme('dark')" aria-label="Dark Theme">🌙</button>
       </div>
-      <div class="lang">
-        <label for="langSel" class="sr" style="font-size:.8rem;color:var(--muted)">Language / زبان</label>
-        <select id="langSel" aria-label="Language">
-          <option value="en">English</option>
-          <option value="ur">اردو</option>
-          <option value="ru">Roman Urdu</option>
-        </select>
+      <div class="pill-group" role="group" aria-label="Language">
+        <button type="button" class="pill-btn" id="lang-en" onclick="setLang('en')">English</button>
+        <button type="button" class="pill-btn" id="lang-ru" onclick="setLang('ru')">Roman Urdu</button>
       </div>
     </div>
   </header>
@@ -281,7 +293,7 @@ const STEPS = [
     ["reports","Preparing reports","رپورٹس بنانا","Reports banana"],
     ["duplicate","Repeated manual data entry","بار بار دستی اندراج","Baar baar dasti data entry"],
     ["other","Other","دیگر","Other"]]},
-  {k:"report_freq",ty:"radio",l:["How often do you prepare calculations and reports?","آپ حساب اور رپورٹس کتنی بار تیار کرتے ہیں؟","Aap hisaab aur reports kitni baar banate hain?"],o:[
+  {k:"report_freq",ty:"check",l:["How often do you prepare calculations and reports? (Select all that apply)","آپ حساب اور رپورٹس کتنی بار تیار کرتے ہیں؟","Aap hisaab aur reports kitni baar banate hain? (Tamam lagu hone wale chunein)"],o:[
     ["daily","Daily","روزانہ","Rozana"],["weekly","Weekly","ہفتہ وار","Hafta waar"],
     ["10day","Every 10 days","ہر 10 دن","Har 10 din"],["15day","Every 15 days","ہر 15 دن","Har 15 din"],
     ["monthly","Monthly","ماہانہ","Maahana"],["other","Other","دیگر","Other"]]},
@@ -473,13 +485,17 @@ function restore() {
 
 /* ============ RENDER ============ */
 function render() {
+  if (S.lang === "ur") S.lang = "ru";
   const t = T();
   document.documentElement.lang = S.lang;
-  document.documentElement.dir = S.lang === "ur" ? "rtl" : "ltr";
+  document.documentElement.dir = "ltr";
   $("title").textContent = t.title;
   $("subtitle").textContent = t.sub;
   $("foot").textContent = t.footer;
-  $("langSel").value = S.lang;
+  const enBtn = $("lang-en");
+  const ruBtn = $("lang-ru");
+  if (enBtn) enBtn.classList.toggle("active", S.lang === "en");
+  if (ruBtn) ruBtn.classList.toggle("active", S.lang === "ru");
   const total = STEPS.length + 1;
   const isReview = S.step === REVIEW_INDEX;
   $("bar").style.width = ((S.step + 1) / total * 100) + "%";
@@ -488,6 +504,12 @@ function render() {
   card.replaceChildren();
   if (isReview) renderReview(card); else renderStep(card);
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function setLang(l) {
+  S.lang = l;
+  persist();
+  render();
 }
 
 function renderStep(root) {
@@ -821,7 +843,10 @@ function applyTheme(mode) {
   const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const t = mode === "auto" ? (isDark ? "dark" : "light") : mode;
   document.documentElement.setAttribute("data-theme", t);
-  if ($("themeSel")) $("themeSel").value = mode;
+  ["auto", "light", "dark"].forEach(m => {
+    const b = $("theme-" + m);
+    if (b) b.classList.toggle("active", m === mode);
+  });
 }
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
   const pref = localStorage.getItem("theme_pref") || "auto";
@@ -833,9 +858,7 @@ function init() {
   const savedTheme = localStorage.getItem("theme_pref") || "auto";
   applyTheme(savedTheme);
   const had = restore();
-  $("langSel").addEventListener("change", e => {
-    S.lang = e.target.value; persist(); render();
-  });
+  if (S.lang === "ur") S.lang = "ru";
   render();
   if (had) setSave("saved");
   else setSave("");

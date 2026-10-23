@@ -78,10 +78,9 @@ The system **explicitly asks the client for their budget and timeline expectatio
 ---
 
 ## 🌐 Language Support
-Users can seamlessly toggle between three language modes at any point without losing entered data:
-1. **English (Default)**: Clean LTR business layout.
-2. **اردو (Urdu)**: Natural Pakistani Urdu with RTL (`dir="rtl"`) layout and Nastaliq typography.
-3. **Roman Urdu**: Latin alphabet Urdu for quick mobile typing and easy readability.
+Users can seamlessly toggle between two focused language modes via the top header pill buttons:
+1. **English (Default)**: Clean, modern business layout.
+2. **Roman Urdu**: Latin alphabet Urdu for quick readability and familiar communication.
 
 ---
 
@@ -99,7 +98,7 @@ Users can seamlessly toggle between three language modes at any point without lo
   - Screen-reader friendly with high-contrast text ratios (WCAG AA).
   - Touch targets $\ge 44\text{px}$ for mobile usability.
 - **Theme Support**:
-  - Manual Header Toggle: `💻 System Default`, `☀️ Light Mode`, `🌙 Dark Mode`.
+  - Horizontal Icon Pills: `💻` (System), `☀️` (Light), `🌙` (Dark) — zero clutter, pure icons.
   - Automatic `prefers-color-scheme` synchronization and `localStorage` persistence.
 - **Data Integrations & Webhook**:
   - **Live n8n Webhook**: Connected to `https://rahmat.n8n.calara.agency/webhook/kamran-requirements` with intelligent dual-mode fallback (production `/webhook/` & canvas testing `/webhook-test/`). Automatically triggers workflows to sync to Google Sheets, Telegram, or email.
