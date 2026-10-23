@@ -1799,32 +1799,20 @@
             const text = await res.text().catch(() => "");
             let json = {};
             try { json = JSON.parse(text); } catch(e) {}
-            if (json && json.hint) {
+            if (res.status === 404) {
+              errorMsg = "Workflow is UNPUBLISHED in n8n. Please open n8n and click the 'Publish' button in the top-right corner.";
+            } else if (json && json.hint) {
               errorMsg = json.hint;
-            } else if (res.status === 404) {
-              errorMsg = "Workflow is inactive in n8n. Please toggle the workflow switch to 'Active' (top-right of n8n editor) and try again.";
             } else {
-              errorMsg = `Server responded with status ${res.status}: ${res.statusText || text}`;
+              errorMsg = `Server returned status ${res.status}: ${res.statusText || text}`;
             }
           }
         } catch (err) {
-          console.warn("Direct fetch attempt failed for:", url, err);
-          // If browser blocked preflight, try simple POST fallback
-          try {
-            await fetch(url, {
-              method: "POST",
-              mode: "no-cors",
-              headers: { "Content-Type": "text/plain" },
-              body: payloadStr
-            });
-            success = true;
-            break;
-          } catch (e2) {
-            if (err.name === "AbortError") {
-              errorMsg = "Submission timed out. Please check your internet connection.";
-            } else {
-              errorMsg = err.message || "Network error reaching server.";
-            }
+          console.warn("Fetch attempt failed for:", url, err);
+          if (err.name === "AbortError") {
+            errorMsg = "Submission timed out after 15s. Please check your internet connection.";
+          } else {
+            errorMsg = "Webhook connection failed. Your n8n workflow is currently UNPUBLISHED. Please open your n8n workflow and click the 'Publish' button (top-right corner).";
           }
         }
       }
@@ -1839,7 +1827,7 @@
         hideBanner();
         openSuccessModal(payload);
       } else {
-        showBanner("bad", `❌ Submission Error: ${errorMsg}`);
+        showBanner("bad", `❌ ${errorMsg}`);
       }
     }
 
