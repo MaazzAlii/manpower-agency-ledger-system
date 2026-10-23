@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business Requirements Form</title>
+<script>
+(function() {
+  try {
+    const pref = localStorage.getItem("theme_pref") || "auto";
+    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const t = pref === "auto" ? (isDark ? "dark" : "light") : pref;
+    document.documentElement.setAttribute("data-theme", t);
+  } catch(e) {}
+})();
+</script>
+<style>
+:root{--navy:#14284b;--accent:#2a7f62;--bg:#faf9f6;--card:#fff;--line:#e3e1dc;--text:#1d2433;--muted:#5b6474;--err:#b3261e;--ok:#1e7a46}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Nastaliq Urdu","Jameel Noori Nastaleeq",sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+.wrap{max-width:720px;margin:0 auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+h1{font-size:1.35rem;margin:8px 0 4px;color:var(--navy)}
+.sub{color:var(--muted);font-size:.95rem;margin:0 0 14px}
+input,select,textarea,button{font:inherit}
+.lang select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress>div{height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);margin:8px 0 14px;gap:8px;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card h2{font-size:1.1rem;color:var(--navy);margin:0 0 14px}
+.field{border:0;margin:0 0 18px;padding:0}
+.lbl{display:block;font-weight:600;margin-bottom:6px;padding:0}
+fieldset.field{min-width:0}
+legend.lbl{display:block;float:none;width:100%;padding:0;margin:0 0 8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.opts label{min-height:44px;padding:8px 10px;margin:0 -10px;border-radius:10px}
+.opts label:hover{background:#f3f1ec}
+.opts label:focus-within{background:#eef6f2}
+.social{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+.social a{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;min-height:44px;border:1px solid var(--line);border-radius:999px;color:var(--navy);text-decoration:none;background:#fff;font-size:.9rem}
+.social a:hover{border-color:var(--navy)}
+.social a:focus-visible{outline:3px solid #9ec5b5;outline-offset:2px}
+.credit{text-align:center;font-size:.85rem;color:var(--muted);margin-top:12px}
+.credit strong{color:var(--navy)}
+.sec-title{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600;margin:0 0 4px}
+.review-sec header{display:block}
+input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],input[type=date],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus{outline:3px solid #9ec5b5;outline-offset:1px}
+.opts label{display:flex;gap:8px;align-items:flex-start;font-weight:400;padding:6px 0;cursor:pointer}
+.opts input{margin-top:6px}
+.err{color:var(--err);font-size:.88rem;min-height:1em}
+.hint{color:var(--muted);font-size:.9rem;margin:0 0 14px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn{padding:11px 18px;border-radius:10px;border:1px solid var(--navy);background:var(--navy);color:#fff;cursor:pointer;min-height:44px}
+.btn.alt{background:#fff;color:var(--navy)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted);text-decoration:underline}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.saved{font-size:.82rem;color:var(--muted)}
+.review-sec{border-top:1px solid var(--line);padding:12px 0}
+.review-sec h3{margin:0 0 6px;font-size:1rem;color:var(--navy)}
+.row{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;font-size:.92rem;padding:3px 0}
+.row .k{color:var(--muted)}
+.row .v{white-space:pre-wrap;word-break:break-word}
+.banner{padding:12px;border-radius:10px;margin-top:14px;display:none}
+.banner.show{display:block}
+.banner.ok{background:#e6f4ec;color:var(--ok)}
+.banner.bad{background:#fbe9e7;color:var(--err)}
+.confirm{display:flex;gap:8px;align-items:flex-start;margin-top:16px;font-weight:400}
+.foot{font-size:.8rem;color:var(--muted);margin-top:14px;text-align:center}
+html[dir=rtl] .row{direction:rtl}
+html[dir=rtl] input[type=email],html[dir=rtl] input[type=tel],html[dir=rtl] input[type=url],html[dir=rtl] input[type=number],html[dir=rtl] input[type=date]{direction:ltr;text-align:left}
+input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],input[type=date],select,textarea{font-size:16px}
+.btn,.opts label,.lang select,.theme-box select{touch-action:manipulation}
+.ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ctrls select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+@media (max-width:520px){
+  .wrap{padding:12px 12px calc(16px + env(safe-area-inset-bottom))}
+  .card{padding:16px;border-radius:14px}
+  h1{font-size:1.2rem}
+  .row{grid-template-columns:1fr}
+  .nav{position:sticky;bottom:0;background:var(--bg);padding:10px 0 calc(10px + env(safe-area-inset-bottom));margin-top:12px;z-index:5}
+  .nav .btn{flex:1}
+  .ctrls{width:100%;justify-content:space-between}
+  .ctrls select{flex:1}
+}
+@media (min-width:900px){.wrap{max-width:760px;padding-top:28px}}
+:root[data-theme="dark"]{
+  --bg:#0f1420;--card:#171e2e;--line:#2c3550;--text:#e9ecf4;--muted:#a3acc2;--navy:#dbe4ff;--accent:#5fc3a0;--err:#ff8a80;--ok:#7ce3a8
+}
+:root[data-theme="dark"] .btn{color:#0f1420;background:var(--navy);border-color:var(--navy)}
+:root[data-theme="dark"] .btn.alt,:root[data-theme="dark"] .social a,:root[data-theme="dark"] input[type=text],:root[data-theme="dark"] input[type=email],:root[data-theme="dark"] input[type=tel],:root[data-theme="dark"] input[type=number],:root[data-theme="dark"] input[type=url],:root[data-theme="dark"] input[type=date],:root[data-theme="dark"] select,:root[data-theme="dark"] textarea,:root[data-theme="dark"] .ctrls select{background:#101726;color:var(--text)}
+:root[data-theme="dark"] .btn.alt{color:var(--text);background:transparent;border-color:var(--line)}
+:root[data-theme="dark"] .opts label:hover{background:#1d2539}
+:root[data-theme="dark"] .opts label:focus-within{background:#1a2a33}
+:root[data-theme="dark"] .banner.ok{background:#16352a}
+:root[data-theme="dark"] .banner.bad{background:#3a1d1b}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]){--bg:#0f1420;--card:#171e2e;--line:#2c3550;--text:#e9ecf4;--muted:#a3acc2;--navy:#dbe4ff;--accent:#5fc3a0;--err:#ff8a80;--ok:#7ce3a8}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .btn{color:#0f1420;background:var(--navy);border-color:var(--navy)}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .btn.alt,:root:not([data-theme="light"]):not([data-theme="dark"]) .social a,:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=text],:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=email],:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=tel],:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=number],:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=url],:root:not([data-theme="light"]):not([data-theme="dark"]) input[type=date],:root:not([data-theme="light"]):not([data-theme="dark"]) select,:root:not([data-theme="light"]):not([data-theme="dark"]) textarea,:root:not([data-theme="light"]):not([data-theme="dark"]) .ctrls select{background:#101726;color:var(--text)}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .btn.alt{color:var(--text);background:transparent;border-color:var(--line)}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .opts label:hover{background:#1d2539}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .opts label:focus-within{background:#1a2a33}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .banner.ok{background:#16352a}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .banner.bad{background:#3a1d1b}
+}
+@media print{
+  body{background:#fff!important;color:#000!important}
+  .wrap{max-width:100%!important;padding:0!important}
+  header .ctrls,.progress,.meta,.nav,footer,#banner,button,select,input[type=checkbox]{display:none!important}
+  .card{box-shadow:none!important;border:1px solid #ccc!important;padding:12px!important;background:#fff!important}
+  .review-sec{break-inside:avoid;page-break-inside:avoid;border:1px solid #e0e0e0!important;margin-bottom:12px!important;background:#fafafa!important}
+  .row{border-bottom:1px solid #eee!important}
+  .row .k{color:#555!important}
+  .row .v{color:#000!important;font-weight:600!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 id="title"></h1>
+      <p class="sub" id="subtitle"></p>
+    </div>
+    <div class="ctrls">
+      <div class="theme-box">
+        <label for="themeSel" class="sr" style="font-size:.8rem;color:var(--muted)">Theme / تھیم</label>
+        <select id="themeSel" aria-label="Theme mode" onchange="setTheme(this.value)">
+          <option value="auto">💻 System / سسٹم</option>
+          <option value="light">☀️ Light / روشن</option>
+          <option value="dark">🌙 Dark / ڈارک</option>
+        </select>
+      </div>
+      <div class="lang">
+        <label for="langSel" class="sr" style="font-size:.8rem;color:var(--muted)">Language / زبان</label>
+        <select id="langSel" aria-label="Language">
+          <option value="en">English</option>
+          <option value="ur">اردو</option>
+          <option value="ru">Roman Urdu</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Form progress"><div id="bar"></div></div>
+  <div class="meta"><span id="stepLabel"></span><span class="saved" id="saveState" aria-live="polite"></span></div>
+
+  <main class="card" id="card"></main>
+  <p class="foot" id="foot"></p>
+  <footer>
+    <nav class="social" aria-label="Developer profiles">
+      <a href="https://www.linkedin.com/in/maazzalii" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 110-4.14 2.07 2.07 0 010 4.14zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+        LinkedIn: maazzalii
+      </a>
+      <a href="https://github.com/maazzalii" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.38.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0024 12.5C24 5.87 18.63.5 12 .5z"/></svg>
+        GitHub: maazzalii
+      </a>
+    </nav>
+    <p class="credit">Prepared by <strong>Maaz Ali</strong></p>
+  </footer>
+</div>
+
+<script>
+/* ============ CONFIG ============
+   Set endpoint to your Google Apps Script web app URL (or any webhook) later.
+   Leave empty for local testing: the form will NOT claim it was sent. */
+const CONFIG = {
+  endpoint: "https://rahmat.n8n.calara.agency/webhook/kamran-requirements",
+  timeoutMs: 15000
+};
+
+/* ============ UI STRINGS (en, ur, ru) ============ */
+const UI = {
+  en: {
+    title: "Let's Understand Your Business",
+    sub: "Your answers help us prepare a solution that fits your real business. Skip anything you are unsure about. You can come back anytime.",
+    step: "Step {n} of {t}", reviewLabel: "Review your answers",
+    next: "Next", prev: "Back", review: "Review answers", submit: "Submit requirements", edit: "Edit",
+    reset: "Reset form", resetConfirm: "Delete all saved answers on this device?",
+    required: "This question is required.", email: "Please enter a valid email.", num: "Please enter a valid number.", url: "Please enter a full web address starting with https://",
+    fixErrors: "Please fix the highlighted fields first.",
+    saved: "Draft saved", saving: "Saving...", saveFail: "Unable to save locally",
+    restored: "Your earlier answers were restored.",
+    sending: "Sending...", ok: "Thank you! Your requirements were received.",
+    notConfigured: "Submission is not connected yet, so nothing was sent. Your answers are saved on this device. You can download a JSON copy below.",
+    fail: "Could not send right now. Your answers are still saved, please try again.",
+    confirmReq: "Please tick the confirmation box before submitting.",
+    download: "Download JSON copy", whatsapp: "📲 Share via WhatsApp", printPdf: "🖨️ Print / Save PDF", none: "Not answered", yes: "Yes", no: "No",
+    confirm: "These answers describe my requirements to the best of my knowledge. This does not create a binding contract.",
+    footer: "Answers stay on this device until you submit. Nothing is sent without your action."
+  },
+  ur: {
+    title: "آئیے آپ کے کاروبار کو سمجھتے ہیں",
+    sub: "آپ کے جوابات ہمیں آپ کے حقیقی کاروبار کے مطابق حل تیار کرنے میں مدد دیں گے۔ جس بات کا یقین نہ ہو اسے چھوڑ دیں، آپ کسی بھی وقت واپس آ سکتے ہیں۔",
+    step: "مرحلہ {n} از {t}", reviewLabel: "اپنے جوابات کا جائزہ لیں",
+    next: "آگے", prev: "پیچھے", review: "جوابات دیکھیں", submit: "معلومات جمع کروائیں", edit: "تبدیل کریں",
+    reset: "فارم دوبارہ شروع کریں", resetConfirm: "کیا اس آلے پر محفوظ تمام جوابات حذف کرنے ہیں؟",
+    required: "یہ سوال ضروری ہے۔", email: "براہ کرم درست ای میل درج کریں۔", num: "براہ کرم درست عدد درج کریں۔", url: "براہ کرم https:// سے شروع ہونے والا مکمل پتہ درج کریں",
+    fixErrors: "پہلے نشان زدہ خانے درست کریں۔",
+    saved: "ڈرافٹ محفوظ ہو گیا", saving: "محفوظ ہو رہا ہے...", saveFail: "مقامی طور پر محفوظ نہیں ہو سکا",
+    restored: "آپ کے پچھلے جوابات بحال کر دیے گئے ہیں۔",
+    sending: "بھیجا جا رہا ہے...", ok: "شکریہ! آپ کی معلومات موصول ہو گئی ہیں۔",
+    notConfigured: "ابھی ارسال کا نظام منسلک نہیں ہے، اس لیے کچھ نہیں بھیجا گیا۔ آپ کے جوابات اس آلے پر محفوظ ہیں۔ نیچے سے JSON کاپی ڈاؤن لوڈ کریں۔",
+    fail: "ابھی ارسال نہیں ہو سکا۔ آپ کے جوابات محفوظ ہیں، دوبارہ کوشش کریں۔",
+    confirmReq: "جمع کروانے سے پہلے تصدیق کا خانہ نشان زد کریں۔",
+    download: "JSON کاپی ڈاؤن لوڈ کریں", whatsapp: "📲 واٹس ایپ پر شیئر کریں", printPdf: "🖨️ پرنٹ یا پی ڈی ایف", none: "جواب نہیں دیا گیا", yes: "ہاں", no: "نہیں",
+    confirm: "یہ جوابات میری بہترین معلومات کے مطابق میری ضروریات بیان کرتے ہیں۔ اس سے کوئی پابند معاہدہ نہیں بنتا۔",
+    footer: "جمع کروانے تک جوابات اسی آلے پر رہتے ہیں۔ آپ کے عمل کے بغیر کچھ نہیں بھیجا جاتا۔"
+  },
+  ru: {
+    title: "Aaiye Aap Ke Business Ko Samajhtay Hain",
+    sub: "Aap ke jawabat hamein aap ke asli business ke mutabiq solution tayyar karne mein madad denge. Jis baat ka yaqeen na ho use chor dein, aap kisi bhi waqt wapas aa sakte hain.",
+    step: "Step {n} of {t}", reviewLabel: "Apne jawabat ka jaiza lein",
+    next: "Agay", prev: "Peechay", review: "Jawabat dekhein", submit: "Maloomat jama karwayein", edit: "Tabdeel karein",
+    reset: "Form dobara shuru karein", resetConfirm: "Kya is device par mehfooz tamam jawabat delete karne hain?",
+    required: "Ye sawal zaroori hai.", email: "Barah karam durust email likhein.", num: "Barah karam durust adad likhein.", url: "Barah karam https:// se shuru hone wala mukammal address likhein",
+    fixErrors: "Pehle nishan zadah khane durust karein.",
+    saved: "Draft mehfooz ho gaya", saving: "Mehfooz ho raha hai...", saveFail: "Local taur par mehfooz nahi ho saka",
+    restored: "Aap ke pichlay jawabat bahal kar diye gaye hain.",
+    sending: "Bheja ja raha hai...", ok: "Shukriya! Aap ki maloomat mosool ho gayi hain.",
+    notConfigured: "Abhi send karne ka system connected nahi hai, is liye kuch nahi bheja gaya. Aap ke jawabat is device par mehfooz hain. Neechay se JSON copy download karein.",
+    fail: "Abhi send nahi ho saka. Aap ke jawabat mehfooz hain, dobara koshish karein.",
+    confirmReq: "Jama karwane se pehle tasdeeq ka khana tick karein.",
+    download: "JSON copy download karein", whatsapp: "📲 WhatsApp par share karein", printPdf: "🖨️ Print / Save PDF", none: "Jawab nahi diya gaya", yes: "Haan", no: "Nahi",
+    confirm: "Ye jawabat meri behtareen maloomat ke mutabiq meri zaroriyat bayan karte hain. Is se koi paband muahida nahi banta.",
+    footer: "Jama karwane tak jawabat isi device par rehte hain. Aap ke amal ke baghair kuch nahi bheja jata."
+  }
+};
+
+/* ============ QUESTIONS ============
+   Label arrays are [en, ur, ru]. Option arrays are [value, en, ur, ru].
+   show(a) returns true when the field should be visible (conditional logic). */
+const STEPS = [
+{ id:"profile", t:["Welcome & Business Profile","تعارف اور کاروبار کی تفصیل","Taaruf aur business ki tafseel"], f:[
+  {k:"full_name",ty:"text",req:1,l:["Full name","پورا نام","Poora naam"]},
+  {k:"company",ty:"text",req:1,l:["Company / agency name","کمپنی / ایجنسی کا نام","Company / agency ka naam"]},
+  {k:"email",ty:"email",req:1,l:["Business email","کاروباری ای میل","Business email"]},
+  {k:"phone",ty:"tel",req:1,l:["Contact number (with country code)","رابطہ نمبر (ملک کے کوڈ کے ساتھ)","Contact number (country code ke sath)"]},
+  {k:"country",ty:"text",l:["Country where you operate","وہ ملک جہاں آپ کام کرتے ہیں","Woh mulk jahan aap kaam karte hain"]},
+  {k:"website",ty:"url",l:["Existing website (if any)","موجودہ ویب سائٹ (اگر ہے)","Existing website (agar hai)"]},
+  {k:"biz_type",ty:"radio",l:["Type of business","کاروبار کی قسم","Business ki qisam"],o:[
+    ["manpower","Manpower supply","افرادی قوت فراہمی","Manpower supply"],
+    ["outsourcing","Workforce outsourcing","ورک فورس آؤٹ سورسنگ","Workforce outsourcing"],
+    ["temp","Temporary staffing","عارضی عملہ فراہمی","Temporary staffing"],
+    ["recruitment","Recruitment services","بھرتی کی خدمات","Recruitment services"],
+    ["labour","Labour supply","مزدور فراہمی","Labour supply"],
+    ["other","Other","دیگر","Other"],
+    ["unsure","Not sure how to categorize","معلوم نہیں","Pata nahi"]]},
+  {k:"worker_count",ty:"radio",l:["How many workers do you currently manage?","آپ اس وقت کتنے ورکرز سنبھال رہے ہیں؟","Aap is waqt kitne workers sambhal rahe hain?"],o:[
+    ["u25","Under 25","25 سے کم","25 se kam"],
+    ["25_100","25–100","25–100","25–100"],
+    ["101_500","101–500","101–500","101–500"],
+    ["501_1000","501–1,000","501–1,000","501–1,000"],
+    ["over1000","More than 1,000","1,000 سے زیادہ","1,000 se zyada"],
+    ["unsure","Not sure","معلوم نہیں","Pata nahi"]]},
+  {k:"client_count",ty:"number",l:["How many client companies do you serve?","آپ کتنی کلائنٹ کمپنیوں کو خدمات دیتے ہیں؟","Aap kitni client companies ko services dete hain?"]},
+  {k:"services",ty:"area",l:["Describe your services (optional)","اپنی خدمات کی وضاحت کریں (اختیاری)","Apni services ki wazahat karein (optional)"]}
+]},
+{ id:"operations", t:["Current Business Operations","موجودہ کاروباری طریقہ کار","Maujooda business ka tareeqa-e-kaar"], f:[
+  {k:"current_tools",ty:"check",l:["How do you manage workers, hours, salaries and company payments now?","آپ ابھی ورکرز، گھنٹے، تنخواہیں اور کمپنی ادائیگیاں کیسے سنبھالتے ہیں؟","Aap abhi workers, ghantay, tankhwahein aur company payments kaise sambhalte hain?"],o:[
+    ["excel","Excel","ایکسل","Excel"],["gsheets","Google Sheets","گوگل شیٹس","Google Sheets"],
+    ["accounting","Accounting software","اکاؤنٹنگ سافٹ ویئر","Accounting software"],
+    ["paper","Paper records","کاغذی ریکارڈ","Kaghazi record"],
+    ["whatsapp","WhatsApp / messages","واٹس ایپ / پیغامات","WhatsApp / messages"],
+    ["manual","Manual calculations","دستی حساب","Dasti hisaab"],
+    ["other","Other","دیگر","Other"]]},
+  {k:"problems",ty:"check",l:["Biggest problems you face (select all that apply)","سب سے بڑے مسائل (جو بھی لاگو ہوں)","Sab se bare masail (jo bhi laagu hon)"],o:[
+    ["pay_calc","Calculating worker payments","ورکرز کی ادائیگی کا حساب","Workers ki adaigi ka hisaab"],
+    ["hours","Tracking working hours","کام کے گھنٹوں کا ریکارڈ","Kaam ke ghantay ka record"],
+    ["bills","Calculating company bills","کمپنی بلز کا حساب","Company bills ka hisaab"],
+    ["profit_worker","Knowing profit per worker","فی ورکر منافع معلوم کرنا","Fi worker profit maloom karna"],
+    ["profit_company","Knowing profit per company","فی کمپنی منافع معلوم کرنا","Fi company profit maloom karna"],
+    ["unpaid_workers","Tracking unpaid worker payments","غیر ادا شدہ ورکرز ادائیگیاں","Ghair ada shuda worker payments"],
+    ["unpaid_clients","Tracking unpaid client invoices","غیر ادا شدہ کلائنٹ انوائسز","Ghair ada shuda client invoices"],
+    ["reports","Preparing reports","رپورٹس بنانا","Reports banana"],
+    ["duplicate","Repeated manual data entry","بار بار دستی اندراج","Baar baar dasti data entry"],
+    ["other","Other","دیگر","Other"]]},
+  {k:"report_freq",ty:"radio",l:["How often do you prepare calculations and reports?","آپ حساب اور رپورٹس کتنی بار تیار کرتے ہیں؟","Aap hisaab aur reports kitni baar banate hain?"],o:[
+    ["daily","Daily","روزانہ","Rozana"],["weekly","Weekly","ہفتہ وار","Hafta waar"],
+    ["10day","Every 10 days","ہر 10 دن","Har 10 din"],["15day","Every 15 days","ہر 15 دن","Har 15 din"],
+    ["monthly","Monthly","ماہانہ","Maahana"],["other","Other","دیگر","Other"]]},
+  {k:"who_enters",ty:"text",l:["Who currently enters and checks this information?","یہ معلومات اس وقت کون درج اور چیک کرتا ہے؟","Yeh maloomat abhi kaun darj aur check karta hai?"]},
+  {k:"workflow",ty:"area",l:["Describe the flow: from recording hours to getting paid by the company and paying the worker","ورکر کے گھنٹے درج کرنے سے کمپنی سے ادائیگی اور ورکر کو ادائیگی تک کا طریقہ بیان کریں","Ghantay darj karne se company se payment lene aur worker ko dene tak ka tareeqa batayein"]},
+  {k:"top_problem",ty:"area",req:1,l:["What is the single most important problem the new system must solve?","نیا سسٹم سب سے پہلے کون سا ایک مسئلہ حل کرے؟","Naya system sab se pehle kaun sa ek masla hal kare?"]}
+]},
+{ id:"workers", t:["Workers & Client Companies","ورکرز اور کلائنٹ کمپنیاں","Workers aur client companies"], f:[
+  {k:"separate_records",ty:"radio",l:["Should the system keep separate records for workers and client companies?","کیا سسٹم ورکرز اور کلائنٹ کمپنیوں کا ریکارڈ الگ رکھے؟","Kya system workers aur client companies ka record alag rakhe?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"],["unsure","Not sure","معلوم نہیں","Pata nahi"]]},
+  {k:"worker_fields",ty:"check",l:["Worker details needed (select all that apply)","ورکر کی کون سی تفصیلات درکار ہیں؟","Worker ki kaun si tafseelat chahiye?"],o:[
+    ["emp_id","Internal employee ID","اندرونی ملازم آئی ڈی","Internal employee ID"],
+    ["contact","Contact information","رابطے کی معلومات","Rabte ki maloomat"],
+    ["status","Status (active / inactive)","حیثیت (فعال / غیر فعال)","Haisiyat (active / inactive)"],
+    ["assigned_co","Assigned client company","تفویض شدہ کلائنٹ کمپنی","Assigned client company"],
+    ["role","Job role","کام کی نوعیت","Kaam ki nau'iyat"],
+    ["join_date","Joining date","شمولیت کی تاریخ","Shamooliyat ki tareekh"],
+    ["id_docs","Identity documents (passport / Emirates ID)","شناختی دستاویزات (پاسپورٹ / ایمریٹس آئی ڈی)","Shanakhti documents (passport / Emirates ID)"]]},
+  {k:"id_docs_note",ty:"info",show:a=>(a.worker_fields||[]).includes("id_docs"),l:["Please only include ID numbers if the system truly needs them. Sensitive numbers can be left out at this stage.","شناختی نمبرز صرف اسی صورت میں دیں جب سسٹم کو واقعی ضرورت ہو۔ حساس نمبرز اس مرحلے پر چھوڑے جا سکتے ہیں۔","Shanakhti numbers sirf usi surat mein dein jab system ko zaroorat ho. Hassas numbers is marhale par chor sakte hain."]},
+  {k:"worker_multi",ty:"radio",l:["Can a worker work for different companies in different periods?","کیا ایک ورکر مختلف وقتوں میں مختلف کمپنیوں کے لیے کام کر سکتا ہے؟","Kya ek worker mukhtalif waqton mein mukhtalif companies ke liye kaam kar sakta hai?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"]]},
+  {k:"overtime",ty:"radio",l:["Do overtime or different shift rates apply?","کیا اوور ٹائم یا مختلف شفٹ ریٹس لاگو ہوتے ہیں؟","Kya overtime ya mukhtalif shift rates laagu hote hain?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"]]},
+  {k:"overtime_rules",ty:"area",show:a=>a.overtime==="yes",l:["Explain the overtime and shift rules","اوور ٹائم اور شفٹ کے قواعد بیان کریں","Overtime aur shift ke usool batayein"]},
+  {k:"rate_varies",ty:"radio",l:["Does the billing rate vary by worker, company, job role or shift?","کیا بلنگ ریٹ ورکر، کمپنی، کام یا شفٹ کے لحاظ سے بدلتا ہے؟","Kya billing rate worker, company, kaam ya shift ke hisaab se badalta hai?"],o:[["no","No, same rate","نہیں، ایک ہی ریٹ","Nahi, aik hi rate"],["worker","Yes, by worker","ہاں، ورکر کے مطابق","Haan, worker ke mutabiq"],["company","Yes, by company","ہاں، کمپنی کے مطابق","Haan, company ke mutabiq"],["role","Yes, by job role","ہاں، کام کی نوعیت کے مطابق","Haan, kaam ki nau'iyat ke mutabiq"],["mixed","Yes, a combination","ہاں، ملا جلا","Haan, mila jula"]]},
+  {k:"rate_detail",ty:"area",show:a=>a.rate_varies&&a.rate_varies!=="no",l:["Explain how rates change","بتائیں ریٹس کیسے بدلتے ہیں","Batayein rates kaise badalte hain"]},
+  {k:"co_fields",ty:"check",l:["Client company details needed","کلائنٹ کمپنی کی کون سی تفصیلات درکار ہیں؟","Client company ki kaun si tafseelat chahiye?"],o:[
+    ["co_name","Company name","کمپنی کا نام","Company ka naam"],["trn","Tax registration number (TRN)","ٹیکس رجسٹریشن نمبر (TRN)","Tax registration number (TRN)"],
+    ["contact_person","Contact person","رابطہ شخص","Rabta shakhs"],["terms","Payment terms (e.g. 30 days)","ادائیگی کی شرائط (مثلاً 30 دن)","Payment terms (jaise 30 din)"],
+    ["invoices","Invoice history","انوائس کی تاریخ","Invoice ki tareekh"],["balance","Outstanding balance","باقی رقم","Baqi raqam"]]}
+]},
+{ id:"timesheets", t:["Working Hours & Timesheets","کام کے گھنٹے اور ٹائم شیٹ","Kaam ke ghantay aur timesheet"], f:[
+  {k:"hours_source",ty:"check",l:["How are working hours recorded now? (select all that apply)","ابھی کام کے گھنٹے کیسے درج ہوتے ہیں؟ (جو لاگو ہوں)","Abhi kaam ke ghantay kaise darj hote hain?"],o:[
+    ["admin","Entered manually by admin","ایڈمن دستی درج کرتا ہے","Admin dasti darj karta hai"],
+    ["office","Entered by office staff","دفتری عملہ درج کرتا ہے","Daftri amla darj karta hai"],
+    ["excel","Imported from Excel","ایکسل سے","Excel se"],
+    ["client","Received from client companies","کلائنٹ کمپنیوں سے موصول ہوتے ہیں","Client companies se milte hain"],
+    ["worker","Submitted by workers","ورکرز خود جمع کرواتے ہیں","Workers khud jama karwate hain"],
+    ["other","Other","دیگر","Other"]]},
+  {k:"daily_ts",ty:"radio",l:["Do you need daily timesheets?","کیا آپ کو روزانہ ٹائم شیٹ چاہیے؟","Kya aap ko roz ki timesheet chahiye?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"]]},
+  {k:"ts_fields",ty:"check",l:["Timesheet should record","ٹائم شیٹ میں کیا درج ہو","Timesheet mein kya darj ho"],o:[
+    ["regular","Regular hours","عام گھنٹے","Aam ghantay"],["overtime","Overtime hours","اوور ٹائم گھنٹے","Overtime ghantay"],
+    ["shift","Shift type","شفٹ کی قسم","Shift ki qisam"],["dates","Working dates","کام کی تاریخیں","Kaam ki tareekhein"]]},
+  {k:"approval",ty:"radio",l:["Should timesheets be approved before they count in payroll or billing?","کیا ٹائم شیٹ کو پے رول یا بلنگ میں شامل کرنے سے پہلے منظوری لازمی ہو؟","Kya timesheet ki payroll ya billing mein shamil karne se pehle approval zaroori ho?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"]]},
+  {k:"approver",ty:"text",show:a=>a.approval==="yes",l:["Who approves timesheets?","ٹائم شیٹ کون منظور کرتا ہے؟","Timesheet kaun approve karta hai?"]},
+  {k:"corrections",ty:"radio",l:["Are corrections to submitted hours allowed? Should changes be logged?","کیا جمع شدہ گھنٹوں میں تبدیلی کی اجازت ہے؟ کیا تبدیلیوں کا ریکارڈ رکھا جائے؟","Kya jama shuda ghanton mein tabdeeli ki ijazat hai? Kya record rakha jaye?"],o:[["yes_log","Yes, and keep a change log","ہاں، اور تبدیلی کا ریکارڈ بھی","Haan, aur change log bhi"],["yes_nolog","Yes, no log needed","ہاں، ریکارڈ کی ضرورت نہیں","Haan, log ki zaroorat nahi"],["no","No","نہیں","Nahi"]]},
+  {k:"missing_hours",ty:"area",l:["How should missing or disputed hours be handled?","غائب یا متنازع گھنٹوں کو کیسے سنبھالا جائے؟","Ghair mojood ya mutnazea ghanton ko kaise sambhala jaye?"]},
+  {k:"pay_arr",ty:"check",l:["Payment arrangements for workers (select all that apply)","ورکرز کی ادائیگی کا طریقہ (جو لاگو ہوں)","Workers ki adaigi ka tareeqa (jo laagu hon)"],o:[
+    ["hourly","Hourly rate","فی گھنٹہ ریٹ","Fi ghantah rate"],["daily","Daily wage","یومیہ اجرت","Yomia ujrat"],
+    ["monthly","Monthly salary","ماہانہ تنخواہ","Maahana tankhwah"],["mixed","Mixed arrangements","ملے جلے طریقے","Mile jule tareeqay"]]},
+  {k:"special_days",ty:"area",l:["Do overnight shifts or holidays have special rules? Explain.","کیا رات کی شفٹ یا چھٹیوں کے خصوصی قواعد ہیں؟ بیان کریں۔","Kya raat ki shift ya chhuttiyon ke khaas usool hain? Batayein."]}
+]},
+{ id:"payroll", t:["Payroll, Billing & Profit","پے رول، بلنگ اور منافع","Payroll, billing aur profit"], f:[
+  {k:"info_terms",ty:"info",l:["Simple terms: Company billing = what the client company pays you. Worker payment = what you pay the worker. Gross margin = billing minus worker cost. Net profit = margin minus your expenses.","سادہ الفاظ: کمپنی بلنگ = کمپنی آپ کو جو دیتی ہے۔ ورکر ادائیگی = آپ ورکر کو جو دیتے ہیں۔ مجموعی منافع = بلنگ منہا ورکر لاگت۔ خالص منافع = مجموعی منافع منہا آپ کے اخراجات۔","Aasan alfaaz: Company billing = client company aap ko jo deti hai. Worker payment = aap worker ko jo dete hain. Gross margin = billing minus worker cost. Net profit = margin minus aap ke kharche."]},
+  {k:"worker_pay_method",ty:"area",l:["How is the worker's payment calculated?","ورکر کی ادائیگی کیسے نکالی جاتی ہے؟","Worker ki adaigi kaise nikali jati hai?"]},
+  {k:"company_bill_method",ty:"area",l:["How is the company billing amount calculated?","کمپنی بلنگ کی رقم کیسے نکالی جاتی ہے؟","Company billing ki raqam kaise nikali jati hai?"]},
+  {k:"rate_unit",ty:"radio",l:["What rate do you charge the company?","آپ کمپنی سے کس بنیاد پر ریٹ لیتے ہیں؟","Aap company se kis bunyad par rate lete hain?"],o:[["hour","Per hour","فی گھنٹہ","Fi ghantah"],["day","Per day","فی دن","Fi din"],["month","Per month","فی مہینہ","Fi mahina"],["other","Other","دیگر","Other"]]},
+  {k:"calc_features",ty:"check",l:["Calculations needed in the first version (select all that apply)","پہلے ورژن میں کون سے حساب درکار ہیں؟","Pehle version mein kaun se hisaab chahiye?"],o:[
+    ["total_hours","Total hours worked","کل کام کیے گئے گھنٹے","Kul kaam kiye gaye ghantay"],
+    ["bill_amt","Amount billable per company","فی کمپنی بلنگ کی رقم","Fi company billing raqam"],
+    ["pay_amt","Amount payable per worker","فی ورکر ادائیگی","Fi worker adaigi"],
+    ["margin","Margin per worker and per company","فی ورکر اور فی کمپنی منافع","Fi worker aur company margin"],
+    ["period","Profit by period (weekly, 10/15 days, monthly)","مدت کے لحاظ سے منافع (ہفتہ، 10/15 دن، ماہانہ)","Muddat ke lehaz se profit (haftah, 10/15 din, mahana)"],
+    ["outstanding","Outstanding client invoices and unpaid worker payments","باقی کلائنٹ انوائسز اور غیر ادا شدہ ادائیگیاں","Baqi client invoices aur ghair ada shuda adaigiyan"],
+    ["net_profit","Net profit after expenses","اخراجات کے بعد خالص منافع","Kharchon ke baad khalis profit"]]},
+  {k:"expenses",ty:"check",l:["Which expenses should reduce profit?","کون سے اخراجات منافع سے منہا ہوں؟","Kaun se kharche profit se minha hon?"],o:[
+    ["transport","Transport","ٹرانسپورٹ","Transport"],["accommodation","Accommodation","رہائش","Rihaish"],
+    ["uniform","Uniforms / equipment","یونیفارم / سامان","Uniform / saman"],["recruitment","Recruitment costs","بھرتی کے اخراجات","Bharti ke kharche"],
+    ["other_exp","Other","دیگر","Other"],["none","None","کوئی نہیں","Koi nahi"]]},
+  {k:"expense_detail",ty:"area",show:a=>(a.expenses||[]).some(x=>x!=="none"),l:["Describe how these expenses are charged","بتائیں یہ اخراجات کیسے لگتے ہیں","Batayein yeh kharche kaise lagte hain"]},
+  {k:"est_or_actual",ty:"radio",l:["Should the system only estimate, or also record actual payments?","کیا سسٹم صرف اندازہ لگائے یا اصل ادائیگیاں بھی ریکارڈ کرے؟","Kya system sirf andaaza lagaye ya asal adaigiyan bhi record kare?"],o:[["est","Estimates only","صرف اندازہ","Sirf andaaza"],["actual","Estimates and actual payment records","اندازہ اور اصل ادائیگی ریکارڈ","Andaaza aur asal adaigi record"]]},
+  {k:"payroll_notes",ty:"area",l:["Anything else about your calculations? (optional)","حساب کے بارے میں کچھ اور؟ (اختیاری)","Hisaab ke baare mein kuch aur? (optional)"]}
+]},
+{ id:"reports", t:["Reports, Documents & Existing Data","رپورٹس، دستاویزات اور موجودہ ڈیٹا","Reports, documents aur maujooda data"], f:[
+  {k:"reports",ty:"check",l:["Which reports do you need?","کون سی رپورٹس چاہئیں؟","Kaun si reports chahiye?"],o:[
+    ["worker_pay","Worker payment summary","ورکر ادائیگی خلاصہ","Worker payment khulasa"],
+    ["co_bill","Company billing summary","کمپنی بلنگ خلاصہ","Company billing khulasa"],
+    ["worker_profit","Profit per worker","فی ورکر منافع","Fi worker profit"],
+    ["co_profit","Profit per company","فی کمپنی منافع","Fi company profit"],
+    ["outstanding","Outstanding invoices and unpaid payments","باقی انوائسز اور غیر ادا شدہ ادائیگیاں","Baqi invoices aur ghair ada shuda adaigiyan"],
+    ["dashboard","Financial dashboard with charts","چارٹس کے ساتھ مالیاتی ڈیش بورڈ","Charts ke sath financial dashboard"]]},
+  {k:"export",ty:"check",l:["Export formats needed","کس فارمیٹ میں ایکسپورٹ چاہیے؟","Kis format mein export chahiye?"],o:[
+    ["excel","Excel","ایکسل","Excel"],["csv","CSV","CSV","CSV"],["pdf","PDF","PDF","PDF"],["print","Printable page","پرنٹ ایبل صفحہ","Printable page"]]},
+  {k:"existing_data",ty:"check",l:["Where is your current data stored?","آپ کا موجودہ ڈیٹا کہاں رکھا ہے؟","Aap ka mojooda data kahan rakha hai?"],o:[
+    ["excel","Excel workbooks","ایکسل ورک بکس","Excel workbooks"],["gsheets","Google Sheets","گوگل شیٹس","Google Sheets"],
+    ["accounting","Accounting software","اکاؤنٹنگ سافٹ ویئر","Accounting software"],["paper","Paper","کاغذ","Kaghaz"],["other","Other","دیگر","Other"]]},
+  {k:"migration",ty:"radio",show:a=>(a.existing_data||[]).some(x=>x==="excel"||x==="gsheets"),l:["Should old spreadsheet data be imported into the new system?","کیا پرانا ڈیٹا نئے سسٹم میں منتقل کرنا ہے؟","Kya purana data naye system mein muntaqil karna hai?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"]]},
+  {k:"existing_notes",ty:"area",l:["Describe your existing records (optional). Please remove personal or sensitive data before sharing any sample files later.","موجودہ ریکارڈ کی وضاحت کریں (اختیاری)۔ کوئی نمونہ فائل بھیجنے سے پہلے ذاتی یا حساس ڈیٹا ہٹا دیں۔","Mojooda record ki wazahat karein (optional). Namoona file bhejne se pehle zaati ya hassas data hata dein."]}
+]},
+{ id:"security", t:["Users, Permissions & Security","صارفین، اجازتیں اور سیکیورٹی","Users, ijazatein aur security"], f:[
+  {k:"who_uses",ty:"radio",l:["Who will use the system?","سسٹم کون استعمال کرے گا؟","System kaun istemal karega?"],o:[["owner","Owner only","صرف مالک","Sirf malik"],["owner_staff","Owner and office staff","مالک اور دفتری عملہ","Malik aur daftri amla"],["managers","Managers and staff","منیجرز اور عملہ","Managers aur amla"],["multi","Multiple departments","کئی شعبے","Kai shobay"]]},
+  {k:"user_count",ty:"radio",l:["How many users are expected?","کتنے صارفین متوقع ہیں؟","Kitne users mutawaqe hain?"],o:[["1_3","1–3","1–3","1–3"],["4_10","4–10","4–10","4–10"],["10plus","More than 10","10 se zyada","10 se zyada"]]},
+  {k:"perm_needed",ty:"radio",show:a=>a.who_uses&&a.who_uses!=="owner",l:["Should different users have different permissions?","کیا مختلف صارفین کی مختلف اجازتیں ہوں؟","Kya mukhtalif users ki mukhtalif ijazatein hon?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"]]},
+  {k:"hide_wages",ty:"radio",l:["Should some users be blocked from seeing worker wages or profit?","کیا کچھ صارفین کو ورکر تنخواہیں یا منافع دیکھنے سے روکنا ہے؟","Kya kuch users ko worker tankhwahein ya profit dekhne se rokna hai?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"]]},
+  {k:"audit",ty:"radio",l:["Should the system record who added or changed important records?","کیا سسٹم ریکارڈ کرے کہ اہم ڈیٹا کس نے شامل یا تبدیل کیا؟","Kya system record kare ke ahem data kisne add ya change kiya?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"]]},
+  {k:"backups",ty:"radio",l:["Are regular backups important to you?","کیا باقاعدہ بیک اپ آپ کے لیے ضروری ہیں؟","Kya regular backup aap ke liye zaroori hain?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"],["unsure","Not sure","معلوم نہیں","Pata nahi"]]}
+]},
+{ id:"website", t:["Public Company Website","کمپنی کی عوامی ویب سائٹ","Company ki public website"], f:[
+  {k:"info_site",ty:"info",l:["The public website is separate from the internal management system. It helps attract new corporate clients.","عوامی ویب سائٹ اندرونی انتظامی سسٹم سے الگ ہے۔ یہ نئے کارپوریٹ کلائنٹس لانے میں مدد دیتی ہے۔","Public website internal management system se alag hai. Yeh naye corporate clients lane mein madad deti hai."]},
+  {k:"want_site",ty:"radio",l:["Do you want a public website?","کیا آپ کو عوامی ویب سائٹ چاہیے؟","Kya aap ko public website chahiye?"],o:[["yes","Yes, needed","ہاں، ضروری ہے","Haan, zaroori hai"],["later","Maybe later","شاید بعد میں","Shayad baad mein"],["no","No","نہیں","Nahi"]]},
+  {k:"site_pages",ty:"check",show:a=>a.want_site==="yes"||a.want_site==="later",l:["Pages and features needed","کون سے صفحات اور فیچرز چاہئیں","Kaun se pages aur features chahiye"],o:[
+    ["home","Home","ہوم","Home"],["about","About us","ہمارے بارے میں","Hamare bare mein"],["services","Services","خدمات","Services"],
+    ["industries","Industries served","شعبے جن کی خدمت کی جاتی ہے","Sheba jin ki khidmat ki jati hai"],["contact","Contact page","رابطہ","Rabta"],
+    ["whatsapp","WhatsApp button","واٹس ایپ بٹن","WhatsApp button"],["enquiry","Enquiry / quote form","پوچھ گچھ / کوٹیشن فارم","Enquiry / quotation form"],
+    ["careers","Careers and job application","کیریئرز اور درخواست فارم","Careers aur job application"],["profile_pdf","Company profile download","کمپنی پروفائل ڈاؤن لوڈ","Company profile download"]]},
+  {k:"site_has",ty:"check",show:a=>a.want_site==="yes"||a.want_site==="later",l:["What do you already have? (select all that apply)","آپ کے پاس پہلے سے کیا ہے؟ (جو لاگو ہوں)","Aap ke paas pehle se kya hai?"],o:[
+    ["logo","Logo and branding","لوگو اور برانڈنگ","Logo aur branding"],["domain","Domain name","ڈومین نام","Domain naam"],
+    ["hosting","Hosting account","ہوسٹنگ اکاؤنٹ","Hosting account"],["content","Approved text and photos","منظور شدہ متن اور تصاویر","Manzoor shuda matn aur tasveerein"]]},
+  {k:"site_clients",ty:"area",show:a=>a.want_site==="yes"||a.want_site==="later",l:["What types of corporate clients do you want to attract? Who will update the content?","آپ کس قسم کے کارپوریٹ کلائنٹس لانا چاہتے ہیں؟ مواد کون اپڈیٹ کرے گا؟","Aap kis qisam ke corporate clients lana chahte hain? Content kaun update karega?"]}
+]},
+{ id:"technical", t:["Technical Preferences","تکنیکی ترجیحات","Technical tarjeehat"], f:[
+  {k:"devices",ty:"radio",l:["Which devices must the system work on?","سسٹم کن آلات پر چلنا چاہیے؟","System kin aalaat par chalna chahiye?"],o:[["desk","Desktop and laptop","ڈیسک ٹاپ اور لیپ ٹاپ","Desktop aur laptop"],["mobile","Mobile phone","موبائل فون","Mobile phone"],["all","All of these","یہ سب","Yeh sab"]]},
+  {k:"access",ty:"radio",l:["Where should it be accessible?","سسٹم کہاں سے قابل رسائی ہو؟","System kahan se qabil-e-rasai ho?"],o:[["online","Online through a secure website","محفوظ ویب سائٹ کے ذریعے آن لائن","Mehfooz website ke zariye online"],["local","Only inside the office network","صرف دفتر کے نیٹ ورک میں","Sirf daftar ke network mein"],["unsure","Not sure, recommend the best option","معلوم نہیں، بہترین تجویز دیں","Pata nahi, behtareen tajweez dein"]]},
+  {k:"travel_access",ty:"radio",l:["Do you need to access it while travelling?","کیا سفر کے دوران رسائی چاہیے؟","Kya safar ke dauran rasai chahiye?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"]]},
+  {k:"currency",ty:"check",l:["Currencies needed","کون سی کرنسی چاہیے","Kon si currency chahiye"],o:[["aed","AED","AED","AED"],["pkr","PKR","PKR","PKR"],["usd","USD","USD","USD"],["other","Other","دیگر","Other"]]},
+  {k:"default_currency",ty:"radio",show:a=>(a.currency||[]).length>0,l:["Default currency for reports","رپورٹس کی ڈیفالٹ کرنسی","Reports ki default currency"],o:[["aed","AED","AED","AED"],["pkr","PKR","PKR","PKR"]]},
+  {k:"notifications",ty:"check",l:["Notifications wanted","کون سی اطلاعات چاہئیں","Kaun si notifications chahiye"],o:[["email","Email notifications","ای میل اطلاعات","Email notifications"],["reminder","Reminders for unpaid invoices or due payments","غیر ادا شدہ انوائسز یا ادائیگی کی یاد دہانی","Ghair ada invoices ya due payments ki yaad dehani"],["none","None","کوئی نہیں","Koi nahi"]]},
+  {k:"integrations",ty:"area",l:["Any integrations needed (Google Sheets, accounting software, WhatsApp)? Explain.","کسی دوسرے سسٹم سے انضمام درکار ہے؟ (گوگل شیٹس، اکاؤنٹنگ، واٹس ایپ)","Kisi aur system se integration chahiye? (Google Sheets, accounting, WhatsApp)"]},
+  {k:"hosting_have",ty:"radio",l:["Do you already have a domain, server or hosting account?","کیا آپ کے پاس ڈومین، سرور یا ہوسٹنگ اکاؤنٹ ہے؟","Kya aap ke paas domain, server ya hosting account hai?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"],["unsure","Not sure","معلوم نہیں","Pata nahi"]]},
+  {k:"hosting_detail",ty:"text",show:a=>a.hosting_have==="yes",l:["Which domain or hosting do you have?","کون سا ڈومین یا ہوسٹنگ ہے؟","Kon sa domain ya hosting hai?"]},
+  {k:"tech_other",ty:"area",l:["Other technical requirements (optional)","دیگر تکنیکی ضروریات (اختیاری)","Digar technical zaroriyat (optional)"]}
+]},
+{ id:"budget", t:["Budget, Timeline & Priorities","بجٹ، ٹائم لائن اور ترجیحات","Budget, timeline aur tarjeehat"], f:[
+  {k:"info_budget",ty:"info",l:["This helps us suggest a practical first version. You do not need to know the exact development cost yet.","اس سے ہم عملی پہلا ورژن تجویز کر سکیں گے۔ ابھی ترقی کی درست لاگت جاننا ضروری نہیں۔","Is se hum amli pehla version tajweez kar sakein ge. Abhi development ki durust lagat janna zaroori nahi."]},
+  {k:"budget_range",ty:"radio",l:["Budget range you are comfortable with (PKR)","آپ کے لیے مناسب بجٹ (PKR)","Aap ke liye munasib budget (PKR)"],o:[
+    ["lt50","Under PKR 50,000","PKR 50,000 سے کم","PKR 50,000 se kam"],
+    ["50_100","PKR 50,000–100,000","PKR 50,000–100,000","PKR 50,000–100,000"],
+    ["100_150","PKR 100,000–150,000","PKR 100,000–150,000","PKR 100,000–150,000"],
+    ["150_250","PKR 150,000–250,000","PKR 150,000–250,000","PKR 150,000–250,000"],
+    ["250_400","PKR 250,000–400,000","PKR 250,000–400,000","PKR 250,000–400,000"],
+    ["gt400","Above PKR 400,000","PKR 400,000 سے زیادہ","PKR 400,000 se zyada"],
+    ["custom","Custom amount (enter below)","اپنی رقم (نیچے لکھیں)","Apni raqam (neechay likhein)"],
+    ["discuss","Prefer to discuss","بات چیت کے ذریعے","Baat cheet ke zariye"],
+    ["unsure","Not sure yet","ابھی معلوم نہیں","Abhi pata nahi"]]},
+  {k:"budget_custom",ty:"text",show:a=>a.budget_range==="custom",l:["Enter amount and currency (e.g. AED 20,000)","رقم اور کرنسی لکھیں (مثلاً AED 20,000)","Raqam aur currency likhein (jaise AED 20,000)"]},
+  {k:"budget_includes_hosting",ty:"radio",l:["Does this budget include hosting and ongoing support, or only development?","کیا یہ بجٹ ہوسٹنگ اور سپورٹ شامل کرتا ہے یا صرف ڈویلپمنٹ؟","Kya yeh budget hosting aur support shamil karta hai ya sirf development?"],o:[["yes","Includes hosting and support","ہوسٹنگ اور سپورٹ شامل ہے","Hosting aur support shamil hai"],["dev_only","Development only","صرف ڈویلپمنٹ","Sirf development"],["unsure","Not sure","معلوم نہیں","Pata nahi"]]},
+  {k:"first_version",ty:"radio",l:["Would you prefer a basic first version, with more features added later?","کیا آپ بنیادی پہلا ورژن پسند کریں گے جس میں بعد میں مزید فیچرز شامل ہوں؟","Kya aap basic pehla version pasand karein ge jis mein baad mein features add hon?"],o:[["basic","Yes, basic first","ہاں، پہلے بنیادی","Haan, pehle basic"],["full","Full system at once","ایک ہی بار مکمل سسٹم","Aik hi baar mukammal system"],["phased","Phased, decide later","مرحلہ وار، بعد میں طے کریں","Marhala war, baad mein tay karein"]]},
+  {k:"phased_features",ty:"area",show:a=>a.first_version==="phased",l:["Which features should be in the first release?","پہلی ریلیز میں کون سے فیچرز ہوں؟","Pehli release mein kaun se features hon?"]},
+  {k:"top3",ty:"area",l:["Which three features matter most to you?","تین سب سے اہم فیچرز کون سے ہیں؟","Teen sab se ahem features kaun se hain?"]},
+  {k:"deadline",ty:"date",l:["When would you ideally like the first version ready? (optional)","آپ پہلا ورژن کب تک چاہتے ہیں؟ (اختیاری)","Aap pehla version kab tak chahte hain? (optional)"]},
+  {k:"separate_quotes",ty:"radio",l:["Would you like separate quotes for the management system and the public website?","کیا آپ مینجمنٹ سسٹم اور عوامی ویب سائٹ کے الگ الگ کوٹیشن چاہیں گے؟","Kya aap management system aur public website ke alag quotation chahein ge?"],o:[["yes","Yes","ہاں","Haan"],["no","No","نہیں","Nahi"],["unsure","Not sure","معلوم نہیں","Pata nahi"]]}
+]},
+{ id:"additional", t:["Additional Requirements & Questions","مزید ضروریات اور سوالات","Mazeed zaroriyat aur sawalaat"], f:[
+  {k:"extra_req",ty:"area",l:["Anything else the system must do?","سسٹم کو کیا کچھ اور کرنا ضروری ہے؟","System ko aur kya karna zaroori hai?"]},
+  {k:"business_rules",ty:"area",l:["Special business rules not covered above","اوپر شامل نہ ہونے والے خصوصی کاروباری قواعد","Upar shamil na hone wale khaas business usool"]},
+  {k:"liked_systems",ty:"area",l:["Existing systems or websites you like (optional)","پسند کے موجودہ سسٹم یا ویب سائٹس (اختیاری)","Pasand ke mojooda systems ya websites (optional)"]},
+  {k:"dislikes",ty:"area",l:["Anything you definitely do NOT want?","کوئی چیز جو بالکل نہیں چاہیے؟","Koi cheez jo bilkul nahi chahiye?"]},
+  {k:"questions",ty:"area",l:["Questions for the developer","ڈویلپر کے لیے سوالات","Developer ke liye sawalaat"]}
+]}
+];
+const REVIEW_INDEX = STEPS.length;   // review screen is the last step
+
+/* ============ STATE ============ */
+const KEY = "kamran_requirements_v1";
+const FRESH = () => ({ lang: "en", step: 0, a: {}, confirm: false });
+let S = FRESH();
+let submitting = false;
+
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+const li = () => ({ en: 0, ur: 1, ru: 2 })[S.lang];
+const T = () => UI[S.lang];
+const isEmpty = v => v === undefined || v === null || v === "" || (Array.isArray(v) && v.length === 0);
+const visible = f => !f.show || f.show(S.a);
+
+/* ============ DRAFT SAVING ============ */
+function setSave(msgKey, isError) {
+  const s = $("saveState");
+  s.textContent = msgKey ? T()[msgKey] : "";
+  s.style.color = isError ? "var(--err)" : "";
+}
+function persist() {
+  setSave("saving");
+  try {
+    localStorage.setItem(KEY, JSON.stringify(S));
+    setSave("saved");
+  } catch (e) {
+    setSave("saveFail", true);
+  }
+}
+function restore() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return false;
+    const o = JSON.parse(raw);
+    S = Object.assign(FRESH(), o);
+    if (!UI[S.lang]) S.lang = "en";
+    if (S.step < 0 || S.step > REVIEW_INDEX) S.step = 0;
+    return true;
+  } catch (e) { return false; }
+}
+
+/* ============ RENDER ============ */
+function render() {
+  const t = T();
+  document.documentElement.lang = S.lang;
+  document.documentElement.dir = S.lang === "ur" ? "rtl" : "ltr";
+  $("title").textContent = t.title;
+  $("subtitle").textContent = t.sub;
+  $("foot").textContent = t.footer;
+  $("langSel").value = S.lang;
+  const total = STEPS.length + 1;
+  const isReview = S.step === REVIEW_INDEX;
+  $("bar").style.width = ((S.step + 1) / total * 100) + "%";
+  $("stepLabel").textContent = isReview ? t.reviewLabel : t.step.replace("{n}", S.step + 1).replace("{t}", total);
+  const card = $("card");
+  card.replaceChildren();
+  if (isReview) renderReview(card); else renderStep(card);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderStep(root) {
+  const st = STEPS[S.step];
+  root.append(el("h2", null, st.t[li()]));
+  st.f.forEach(f => { if (visible(f)) root.append(buildField(f)); });
+  root.append(navBar());
+}
+
+function buildField(f) {
+  const L = li();
+  if (f.ty === "info") return el("p", "hint", f.l[L]);
+  const wrap = el("div", "field");
+  const label = f.l[L] + (f.req ? " *" : "");
+  let input;
+
+  if (f.ty === "radio" || f.ty === "check") {
+    const fs = el("fieldset", "field");
+    fs.style.border = "0"; fs.style.padding = "0"; fs.style.margin = "0 0 18px";
+    const lg = el("legend", "lbl", label);
+    fs.append(lg);
+    const box = el("div", "opts");
+    f.o.forEach(o => {
+      const lb = el("label");
+      const inp = document.createElement("input");
+      inp.type = f.ty === "radio" ? "radio" : "checkbox";
+      inp.name = "f_" + f.k;
+      inp.value = o[0];
+      inp.checked = f.ty === "radio" ? S.a[f.k] === o[0] : (Array.isArray(S.a[f.k]) && S.a[f.k].includes(o[0]));
+      inp.addEventListener("change", () => {
+        if (f.ty === "radio") {
+          S.a[f.k] = o[0];
+        } else {
+          const arr = Array.isArray(S.a[f.k]) ? S.a[f.k] : [];
+          S.a[f.k] = inp.checked ? [...arr, o[0]] : arr.filter(x => x !== o[0]);
+        }
+        persist();
+        render(); // re-render so conditional questions appear or disappear
+      });
+      lb.append(inp, document.createTextNode(" " + o[L + 1]));
+      box.append(lb);
+    });
+    fs.append(box);
+    fs.append(el("div", "err")); fs.lastChild.id = "e_" + f.k;
+    fs.dataset.key = f.k;
+    return fs;
+  }
+
+  wrap.dataset.key = f.k;
+  wrap.append(el("label", "lbl", label));
+  if (f.ty === "area") {
+    input = document.createElement("textarea");
+  } else {
+    input = document.createElement("input");
+    input.type = f.ty;
+  }
+  input.id = "f_" + f.k;
+  input.name = f.k;
+  input.setAttribute("aria-describedby", "e_" + f.k);
+  if (f.req) input.required = true;
+  if (f.ty === "number") input.inputMode = "numeric";
+  input.value = S.a[f.k] !== undefined ? S.a[f.k] : "";
+  input.addEventListener("input", () => { S.a[f.k] = input.value; persist(); });
+  wrap.append(input);
+  const err = el("div", "err"); err.id = "e_" + f.k; err.setAttribute("role", "alert");
+  wrap.append(err);
+  return wrap;
+}
+
+function navBar() {
+  const t = T();
+  const nav = el("div", "nav");
+  const back = el("button", "btn alt", t.prev);
+  back.type = "button";
+  back.disabled = S.step === 0;
+  back.addEventListener("click", () => { S.step--; persist(); render(); });
+  const next = el("button", "btn", S.step === STEPS.length - 1 ? t.review : t.next);
+  next.type = "button";
+  next.addEventListener("click", () => {
+    if (!validateStep(S.step)) return;
+    S.step++; persist(); render();
+  });
+  nav.append(back, next);
+  return nav;
+}
+
+/* ============ VALIDATION ============ */
+function checkField(f) {
+  const t = T(), v = S.a[f.k];
+  if (isEmpty(v) || (typeof v === "string" && !v.trim())) return f.req ? t.required : "";
+  if (f.ty === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return t.email;
+  if (f.ty === "number" && (isNaN(Number(v)) || Number(v) < 0)) return t.num;
+  if (f.ty === "url" && !/^https?:\/\/\S+\.\S+/i.test(v)) return t.url;
+  return "";
+}
+function validateStep(idx) {
+  let ok = true;
+  STEPS[idx].f.forEach(f => {
+    if (f.ty === "info" || !visible(f)) return;
+    const msg = checkField(f);
+    const e = document.getElementById("e_" + f.k);
+    if (e) e.textContent = msg;
+    if (msg) ok = false;
+  });
+  if (!ok) showBanner("bad", T().fixErrors);
+  else hideBanner();
+  return ok;
+}
+function firstInvalidStep() {
+  for (let i = 0; i < STEPS.length; i++) {
+    for (const f of STEPS[i].f) {
+      if (f.ty !== "info" && visible(f) && checkField(f)) return i;
+    }
+  }
+  return -1;
+}
+
+/* ============ REVIEW ============ */
+function valueLabel(f, v) {
+  const t = T(), L = li();
+  if (isEmpty(v)) return t.none;
+  if (f.o) {
+    const pick = val => { const o = f.o.find(x => x[0] === val); return o ? o[L + 1] : val; };
+    return Array.isArray(v) ? v.map(pick).join(", ") : pick(v);
+  }
+  return String(v);
+}
+function renderReview(root) {
+  const t = T(), L = li();
+  root.append(el("h2", null, t.reviewLabel));
+  STEPS.forEach((st, i) => {
+    const sec = el("section", "review-sec");
+    const head = el("div", "");
+    head.style.display = "flex"; head.style.justifyContent = "space-between"; head.style.alignItems = "center";
+    head.append(el("h3", null, st.t[L]));
+    const eb = el("button", "btn ghost", t.edit);
+    eb.type = "button";
+    eb.addEventListener("click", () => { S.step = i; persist(); render(); });
+    head.append(eb);
+    sec.append(head);
+    st.f.forEach(f => {
+      if (f.ty === "info" || !visible(f)) return;
+      const row = el("div", "row");
+      row.append(el("div", "k", f.l[L]), el("div", "v", valueLabel(f, S.a[f.k])));
+      sec.append(row);
+    });
+    root.append(sec);
+  });
+
+  const conf = el("label", "confirm");
+  const cb = document.createElement("input");
+  cb.type = "checkbox"; cb.checked = !!S.confirm;
+  cb.addEventListener("change", () => { S.confirm = cb.checked; persist(); });
+  conf.append(cb, document.createTextNode(" " + t.confirm));
+  root.append(conf);
+
+  const nav = el("div", "nav");
+  const back = el("button", "btn alt", t.prev);
+  back.type = "button";
+  back.addEventListener("click", () => { S.step = STEPS.length - 1; persist(); render(); });
+  const send = el("button", "btn", t.submit);
+  send.type = "button";
+  send.id = "sendBtn";
+  send.addEventListener("click", submitRequirements);
+  nav.append(back, send);
+  root.append(nav);
+
+  const tools = el("div", "nav");
+  const dl = el("button", "btn ghost", t.download);
+  dl.type = "button";
+  dl.addEventListener("click", downloadJson);
+
+  const dlXls = el("a", "btn ghost", S.lang === "ur" ? "ایکسل ٹیمپلیٹ ڈاؤنلوڈ کریں (.xlsx)" : (S.lang === "ru" ? "Excel Template Download (.xlsx)" : "Download Excel Template (.xlsx)"));
+  dlXls.href = "Manpower_Agency_Requirements_and_System_Templates.xlsx";
+  dlXls.setAttribute("download", "Manpower_Agency_Requirements_and_System_Templates.xlsx");
+  dlXls.style.textDecoration = "underline";
+
+  const waBtn = el("button", "btn ghost", t.whatsapp);
+  waBtn.type = "button";
+  waBtn.addEventListener("click", shareViaWhatsApp);
+
+  const prBtn = el("button", "btn ghost", t.printPdf);
+  prBtn.type = "button";
+  prBtn.addEventListener("click", () => window.print());
+
+  const rs = el("button", "btn ghost", t.reset);
+  rs.type = "button";
+  rs.addEventListener("click", () => {
+    if (confirm(t.resetConfirm)) { localStorage.removeItem(KEY); S = FRESH(); render(); setSave(""); }
+  });
+  tools.append(dl, dlXls, waBtn, prBtn, rs);
+  root.append(tools);
+
+  const banner = el("div", "banner", "");
+  banner.id = "banner"; banner.setAttribute("role", "status");
+  root.append(banner);
+}
+
+function showBanner(kind, msg) {
+  const b = $("banner");
+  if (!b) return;
+  b.className = "banner show " + (kind === "ok" ? "ok" : "bad");
+  b.textContent = msg;
+}
+function hideBanner() {
+  const b = $("banner");
+  if (b) b.className = "banner";
+}
+
+/* ============ PAYLOAD & SUBMISSION ============ */
+function buildPayload() {
+  const out = {
+    form_id: "kamran_manpower_requirements",
+    schema_version: "1.0",
+    submitted_at: new Date().toISOString(),
+    language: S.lang
+  };
+  STEPS.forEach(st => {
+    const sec = {};
+    st.f.forEach(f => {
+      if (f.ty === "info" || !visible(f)) return;
+      const v = S.a[f.k];
+      if (!isEmpty(v)) sec[f.k] = v;
+    });
+    if (Object.keys(sec).length) out[st.id] = sec;
+  });
+  return out;
+}
+
+function downloadJson() {
+  const blob = new Blob([JSON.stringify(buildPayload(), null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "kamran_requirements.json";
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function shareViaWhatsApp() {
+  const p = buildPayload();
+  const name = (p.profile && p.profile.full_name) || "Kamran Khan";
+  const comp = (p.profile && p.profile.company) || "Manpower Agency";
+  const workers = (p.profile && p.profile.worker_count) || "N/A";
+  const budget = (p.priorities && p.priorities.budget_range) || "Discussed in person";
+  
+  const text = `*📋 Dubai Manpower Agency Ledger - Requirements Summary*\n` +
+    `👤 *Client / Partner:* ${name}\n` +
+    `🏢 *Agency:* ${comp}\n` +
+    `👷 *Workforce Size:* ${workers} workers\n` +
+    `💰 *Budget Range:* ${budget}\n\n` +
+    `*System Highlights:*\n` +
+    `• Daily & Overtime Timesheets (Client billing vs Worker pay)\n` +
+    `• Automatic Middleman Profit Margin Tracking\n` +
+    `• Multi-role office access (hide margins from field staff)\n` +
+    `• PDF & Excel Invoices / P&L Summaries\n\n` +
+    `_Requirements captured via Manpower Discovery System._`;
+    
+  window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(text), "_blank");
+}
+
+async function submitRequirements() {
+  const t = T();
+  if (submitting) return;
+  const bad = firstInvalidStep();
+  if (bad !== -1) {
+    S.step = bad; persist(); render();
+    validateStep(bad);
+    return;
+  }
+  if (!S.confirm) { showBanner("bad", t.confirmReq); return; }
+  if (!CONFIG.endpoint) { showBanner("bad", t.notConfigured); return; }
+
+  submitting = true;
+  const btn = $("sendBtn");
+  if (btn) { btn.disabled = true; btn.textContent = t.sending; }
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), CONFIG.timeoutMs);
+  try {
+    let res = await fetch(CONFIG.endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(buildPayload()),
+      signal: ctrl.signal
+    });
+    if (!res.ok) {
+      let errNote = "";
+      try {
+        const errJson = await res.json();
+        if (errJson.hint && errJson.hint.includes("workflow must be active")) {
+          // Attempt test endpoint in case workflow is being tested on canvas
+          const testEndpoint = CONFIG.endpoint.replace("/webhook/", "/webhook-test/");
+          try {
+            const testRes = await fetch(testEndpoint, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(buildPayload()),
+              signal: ctrl.signal
+            });
+            if (testRes.ok) {
+              res = testRes;
+            }
+          } catch(te) {}
+          if (!res.ok) {
+            errNote = S.lang === "ur" ? "n8n ورک فلو غیر فعال ہے۔ براہ کرم n8n میں ٹوگل آن (Active) کریں یا کینوس پر Execute دبائیں!" : (S.lang === "ru" ? "n8n workflow inactive hai. Barah karam n8n mein workflow Active karein ya Execute dabayein!" : "n8n Workflow is Inactive: Please toggle the workflow to Active in n8n (or click 'Execute workflow' on canvas)!");
+          }
+        }
+      } catch(e) {}
+      if (!res.ok) throw new Error(errNote || ("HTTP " + res.status));
+    }
+    // Treat as confirmed only because the endpoint returned 2xx.
+    localStorage.removeItem(KEY);
+    S = FRESH();
+    S.lang = t === UI.en ? "en" : (t === UI.ur ? "ur" : "ru");
+    render();
+    showBanner("ok", UI[S.lang].ok);
+  } catch (e) {
+    showBanner("bad", e.message && !e.message.startsWith("HTTP") ? e.message : T().fail);
+    if (btn) { btn.disabled = false; btn.textContent = T().submit; }
+  } finally {
+    clearTimeout(timer);
+    submitting = false;
+  }
+}
+
+/* ============ THEME CONTROLLER ============ */
+function setTheme(mode) {
+  try { localStorage.setItem("theme_pref", mode); } catch(e) {}
+  applyTheme(mode);
+}
+function applyTheme(mode) {
+  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const t = mode === "auto" ? (isDark ? "dark" : "light") : mode;
+  document.documentElement.setAttribute("data-theme", t);
+  if ($("themeSel")) $("themeSel").value = mode;
+}
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+  const pref = localStorage.getItem("theme_pref") || "auto";
+  if (pref === "auto") applyTheme("auto");
+});
+
+/* ============ INIT ============ */
+function init() {
+  const savedTheme = localStorage.getItem("theme_pref") || "auto";
+  applyTheme(savedTheme);
+  const had = restore();
+  $("langSel").addEventListener("change", e => {
+    S.lang = e.target.value; persist(); render();
+  });
+  render();
+  if (had) setSave("saved");
+  else setSave("");
+}
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
