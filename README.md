@@ -101,8 +101,8 @@ Users can seamlessly toggle between three language modes at any point without lo
 - **Theme Support**:
   - Manual Header Toggle: `💻 System Default`, `☀️ Light Mode`, `🌙 Dark Mode`.
   - Automatic `prefers-color-scheme` synchronization and `localStorage` persistence.
-- **Data Integrations & Offline Excel**:
-  - Configurable Webhook endpoint (`CONFIG.endpoint`) for direct Google Sheets / Apps Script / Make.com submission.
+- **Data Integrations & Webhook**:
+  - **Live n8n Webhook**: Connected to `https://rahmat.n8n.calara.agency/webhook/kamran-requirements` to automatically trigger workflows, forward entries to Google Sheets, send Telegram/WhatsApp alerts, or dispatch notification emails.
   - Instant **Download JSON** payload button for offline analysis.
   - Included **[Manpower_Agency_Requirements_and_System_Templates.xlsx](Manpower_Agency_Requirements_and_System_Templates.xlsx)** workbook with 4 ready-to-use sheets:
     1. `Requirements_Questionnaire` (All 45 questions formatted for offline client answers)

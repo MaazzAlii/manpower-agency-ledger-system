@@ -162,7 +162,7 @@ input[type=text],input[type=email],input[type=tel],input[type=number],input[type
    Set endpoint to your Google Apps Script web app URL (or any webhook) later.
    Leave empty for local testing: the form will NOT claim it was sent. */
 const CONFIG = {
-  endpoint: "",          // e.g. "https://script.google.com/macros/s/XXXX/exec"
+  endpoint: "https://rahmat.n8n.calara.agency/webhook/kamran-requirements",
   timeoutMs: 15000
 };
 
@@ -733,7 +733,16 @@ async function submitRequirements() {
       body: JSON.stringify(buildPayload()),
       signal: ctrl.signal
     });
-    if (!res.ok) throw new Error("HTTP " + res.status);
+    if (!res.ok) {
+      let errNote = "";
+      try {
+        const errJson = await res.json();
+        if (errJson.hint && errJson.hint.includes("workflow must be active")) {
+          errNote = S.lang === "ur" ? "n8n ورک فلو غیر فعال ہے۔ براہ کرم n8n میں ٹوگل آن (Active) کریں!" : (S.lang === "ru" ? "n8n workflow inactive hai. Barah karam n8n mein workflow Active karein!" : "n8n Workflow is Inactive: Please toggle the workflow to Active in n8n!");
+        }
+      } catch(e) {}
+      throw new Error(errNote || ("HTTP " + res.status));
+    }
     // Treat as confirmed only because the endpoint returned 2xx. Adjust if your endpoint's contract differs.
     localStorage.removeItem(KEY);
     S = FRESH();
@@ -741,7 +750,7 @@ async function submitRequirements() {
     render();
     showBanner("ok", UI[S.lang].ok);
   } catch (e) {
-    showBanner("bad", T().fail);
+    showBanner("bad", e.message && !e.message.startsWith("HTTP") ? e.message : T().fail);
     if (btn) { btn.disabled = false; btn.textContent = T().submit; }
   } finally {
     clearTimeout(timer);
