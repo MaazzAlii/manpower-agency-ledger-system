@@ -106,11 +106,7 @@ Users can seamlessly toggle between three language modes at any point without lo
   - **📲 WhatsApp Summary Button**: One-click sharing of requirements directly to Kamran or client via WhatsApp.
   - **🖨️ Print / Save PDF**: Print-optimized stylesheet for generating professional 2-page PDF proposals directly from the browser.
   - **Instant Download JSON**: Export clean JSON payload containing all 10 discovery sections.
-  - Included **[Manpower_Agency_Requirements_and_System_Templates.xlsx](Manpower_Agency_Requirements_and_System_Templates.xlsx)** workbook with 4 ready-to-use sheets:
-    1. `Requirements_Questionnaire` (All 45 questions formatted for offline client answers)
-    2. `Worker_Database_Template` (Worker master file with margin calculations)
-    3. `Daily_Timesheet_Template` (Daily hours, overtime, worker pay vs company bill)
-    4. `Monthly_Billing_&_PnL` (Monthly gross & net profit summary with formulas)
+  - Included **[Kamran Requirements Responses.xlsx](Kamran%20Requirements%20Responses.xlsx)** spreadsheet connected to Google Drive for offline review and automated response ingestion.
 
 ---
 
