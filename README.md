@@ -101,30 +101,32 @@ Users can seamlessly toggle between two focused language modes via the top heade
   - Horizontal Icon Pills: `💻` (System), `☀️` (Light), `🌙` (Dark) — zero clutter, pure icons.
   - Automatic `prefers-color-scheme` synchronization and `localStorage` persistence.
 - **Data Integrations & Webhook**:
-  - **Live n8n Webhook**: Connected to `https://rahmat.n8n.calara.agency/webhook/kamran-requirements` with intelligent dual-mode fallback (production `/webhook/` & canvas testing `/webhook-test/`). Automatically triggers workflows to sync to Google Sheets, Telegram, or email.
-  - **📲 WhatsApp Summary Button**: One-click sharing of requirements directly to Kamran or client via WhatsApp.
-  - **🖨️ Print / Save PDF**: Print-optimized stylesheet for generating professional 2-page PDF proposals directly from the browser.
-  - **Instant Download JSON**: Export clean JSON payload containing all 10 discovery sections.
-  - Included **[Kamran Requirements Responses.xlsx](Kamran%20Requirements%20Responses.xlsx)** spreadsheet connected to Google Drive for offline review and automated response ingestion.
+  - **Live n8n Webhook**: Connected to `https://maaz.calara.agency/webhook/kamran-requirements`. Automatically triggers workflows to sync to Google Sheets, Telegram, or email.
+  - **🎉 Success Modal Pop-up**: Automatically presents high-converting next steps after submission:
+    - **🖨️ Print / Save PDF Proposal**: Instant print-to-PDF proposal formatting.
+    - **📲 Share via WhatsApp**: One-click sharing with pre-formatted client summary.
+    - **📊 Download Excel Response Template**: Direct link to [`Kamran Requirements Responses.xlsx`](Kamran%20Requirements%20Responses.xlsx).
+  - **💬 Floating WhatsApp Widget**: Direct instant chat with developer Maaz Ali (`+92 337 7233444`).
 
 ---
 
 ## 🚀 How to Run & Deploy
 
 ### Run Locally:
-Simply double-click `kamran_manpower_requirements.html` or open it with any web browser.
+Simply double-click `kamran_manpower_requirements.html` or open `index.html` in any web browser.
 
 ### Deploy to Vercel in 30 Seconds:
 1. Push this repository to GitHub.
 2. Go to [Vercel](https://vercel.com) and click **"Add New Project"**.
 3. Import your repository and click **"Deploy"**.
-4. You will get a fast, free SSL link (e.g. `https://your-project.vercel.app/kamran_manpower_requirements.html`).
+4. The live site is served directly on your root domain (e.g. `https://manpower-agency-ledger-system.vercel.app/`).
 
 ---
 
 ## 👨‍💻 Author & Developer
 
-**Maaz Ali**  
+**Maaz Ali** — *Full-Stack Engineer & Automation Specialist*  
+- **WhatsApp**: [+92 337 7233444](https://wa.me/923377233444?text=Hi%20Maaz%20Ali,%20I%20am%20reviewing%20the%20Dubai%20Manpower%20Agency%20Ledger%20System.)  
 - **LinkedIn**: [maazzalii](https://www.linkedin.com/in/maazzalii)  
 - **GitHub**: [@MaazzAlii](https://github.com/maazzalii)  
 
