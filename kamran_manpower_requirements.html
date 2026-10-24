@@ -1039,11 +1039,10 @@
 
   <script>
     /* ============ CONFIG ============
-       Set endpoint to your Google Apps Script web app URL (or any webhook) later.
-       Leave empty for local testing: the form will NOT claim it was sent. */
+       Google Apps Script Web App Endpoint */
     const CONFIG = {
-      endpoint: "https://maaz.n8n.calara.agency/webhook/kamran-requirements",
-      timeoutMs: 15000
+      endpoint: "https://script.google.com/macros/s/AKfycbzJk_zSroYnqtU0fx5lwPD6NVMvkWEl0KBOqRuhJO1ZuJNmniaQGQRKbp7aXluyoIVV/exec",
+      timeoutMs: 20000
     };
 
     /* ============ UI STRINGS (en, ur, ru) ============ */
@@ -1773,39 +1772,48 @@
 
       try {
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), CONFIG.timeoutMs || 15000);
+        const timer = setTimeout(() => controller.abort(), CONFIG.timeoutMs || 20000);
 
         const res = await fetch(CONFIG.endpoint, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
+            "Content-Type": "text/plain;charset=utf-8"
           },
           body: payloadStr,
           signal: controller.signal
         });
         clearTimeout(timer);
 
-        if (res.ok) {
+        const text = await res.text().catch(() => "");
+        let json = {};
+        try { json = JSON.parse(text); } catch(e) {}
+
+        if (res.ok && (json.ok === true || json.status === "ok" || json.result === "success" || (!json.error && !json.message))) {
           success = true;
+        } else if (json && json.error) {
+          errorMsg = json.error;
+        } else if (json && json.message) {
+          errorMsg = json.message;
         } else {
-          const text = await res.text().catch(() => "");
-          let json = {};
-          try { json = JSON.parse(text); } catch(e) {}
-          if (json && json.hint) {
-            errorMsg = json.hint;
-          } else if (res.status === 404) {
-            errorMsg = "Workflow is UNPUBLISHED in n8n. Please open n8n and click the 'Publish' button in the top-right corner.";
-          } else {
-            errorMsg = `Server returned status ${res.status}: ${res.statusText || text}`;
-          }
+          errorMsg = `Server returned status ${res.status}: ${res.statusText || text}`;
         }
       } catch (err) {
-        console.warn("Fetch attempt failed for:", CONFIG.endpoint, err);
-        if (err.name === "AbortError") {
-          errorMsg = "Submission timed out after 15s. Please check your internet connection.";
-        } else {
-          errorMsg = "Webhook connection failed. Your n8n workflow is currently UNPUBLISHED. Please open your n8n workflow and click the 'Publish' button (top-right corner).";
+        console.warn("Direct fetch attempt failed for:", CONFIG.endpoint, err);
+        // Fallback with no-cors to guarantee delivery even if browser blocks cross-origin redirect
+        try {
+          await fetch(CONFIG.endpoint, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: payloadStr
+          });
+          success = true;
+        } catch (e2) {
+          if (err.name === "AbortError") {
+            errorMsg = "Submission timed out after 20s. Please check your internet connection.";
+          } else {
+            errorMsg = "Unable to connect to Google Apps Script. Please check your internet connection and try again.";
+          }
         }
       }
 

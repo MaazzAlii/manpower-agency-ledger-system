@@ -101,9 +101,9 @@ Users can seamlessly toggle between two focused language modes via the top heade
   - Horizontal Icon Pills: `💻` (System), `☀️` (Light), `🌙` (Dark) — zero clutter, pure icons.
   - Automatic `prefers-color-scheme` synchronization and `localStorage` persistence.
 - **Data Integrations & Webhook**:
-  - **Live n8n Webhook**: Connected to `https://maaz.n8n.calara.agency/webhook/kamran-requirements`. Real-time HTTP delivery with failure protection.
+  - **Google Apps Script Web App**: Connected to `https://script.google.com/macros/s/AKfycbzJk_zSroYnqtU0fx5lwPD6NVMvkWEl0KBOqRuhJO1ZuJNmniaQGQRKbp7aXluyoIVV/exec`. Direct serverless delivery saving to Google Sheets and dispatching executive email notifications.
   - **✅ Verified Success Receipt**: Displays genuine delivery confirmation receipt showing client name, company, email, and live system status. Answers remain safely protected in browser storage until confirmed delivery.
-  - **Auto-Mapping Google Sheet Integration**: Payload provides flattened top-level keys matching spreadsheet columns (`A1:CC1` across all 81 headers) for automatic column matching in n8n.
+  - **Auto-Mapping Google Sheet Integration**: Payload provides flattened top-level keys matching spreadsheet columns (`A1:CC1` across all 81 headers) for automatic column matching in Google Sheets.
   - **Automated Email Dispatch**: Sends pre-rendered, responsive HTML summaries to both the client and administrative inbox.
   - **💬 Floating WhatsApp Widget**: Direct instant chat with developer Maaz Ali (`+92 337 7233444`).
 
