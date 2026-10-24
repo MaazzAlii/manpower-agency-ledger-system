@@ -101,7 +101,7 @@ Users can seamlessly toggle between two focused language modes via the top heade
   - Horizontal Icon Pills: `💻` (System), `☀️` (Light), `🌙` (Dark) — zero clutter, pure icons.
   - Automatic `prefers-color-scheme` synchronization and `localStorage` persistence.
 - **Data Integrations & Webhook**:
-  - **Google Apps Script Web App**: Connected to `https://script.google.com/macros/s/AKfycbzJk_zSroYnqtU0fx5lwPD6NVMvkWEl0KBOqRuhJO1ZuJNmniaQGQRKbp7aXluyoIVV/exec`. Direct serverless delivery saving to Google Sheets and dispatching executive email notifications.
+  - **Google Apps Script Web App**: Connected to `https://script.google.com/macros/s/AKfycbzkQ7Du21XgagSV3e29TFghGvpI-2iqqykF_JQFncBeD6X9_GIfYz_iLD9JeXqOmq1-/exec`. Direct serverless delivery saving to Google Sheets and dispatching executive email notifications.
   - **✅ Verified Success Receipt**: Displays genuine delivery confirmation receipt showing client name, company, email, and live system status. Answers remain safely protected in browser storage until confirmed delivery.
   - **Auto-Mapping Google Sheet Integration**: Payload provides flattened top-level keys matching spreadsheet columns (`A1:CC1` across all 81 headers) for automatic column matching in Google Sheets.
   - **Automated Email Dispatch**: Sends pre-rendered, responsive HTML summaries to both the client and administrative inbox.
