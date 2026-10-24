@@ -169,19 +169,22 @@ function safeCell_(v) {
 function sendEmails_(body, answers) {
   const name = String(body.full_name || 'Client').trim();
   const email = String(body.email || '').trim();
-  const company = String(body.company || '').trim();
+  const company = String(body.company || 'Manpower Agency').trim();
   const submitted = body.submitted_at || new Date().toISOString();
-  const subject = 'New requirements from ' + name;
+
+  // Distinct, professional subject lines
+  const adminSubject = '🚀 Form Filled: Kamran Requirements Received - ' + company + ' (' + name + ')';
+  const clientSubject = '📋 Requirements Received by Maaz Ali - Project Specification (' + company + ')';
 
   const { html, subject: _subject, ...raw } = body;
   const safeName = name.replace(/[^a-z0-9]+/gi, '-').toLowerCase().replace(/^-+|-+$/g, '') || 'client';
   const jsonFile = Utilities.newBlob(JSON.stringify(raw, null, 2), 'application/json', 'kamran-requirements-' + safeName + '.json');
 
-  // Email to Admin (Maaz)
+  // Email to Admin (Maaz Ali)
   try {
     MailApp.sendEmail({
       to: CONFIG.ADMIN_EMAIL,
-      subject: subject,
+      subject: adminSubject,
       name: CONFIG.SENDER_NAME,
       htmlBody: buildHtml_(name, email, company, submitted, answers, true),
       attachments: [jsonFile]
@@ -192,12 +195,12 @@ function sendEmails_(body, answers) {
     throw adminErr;
   }
 
-  // Email to Client
+  // Email to Client (Kamran)
   if (email && email.indexOf('@') > 0) {
     try {
       MailApp.sendEmail({
         to: email,
-        subject: subject,
+        subject: clientSubject,
         name: CONFIG.SENDER_NAME,
         htmlBody: buildHtml_(name, email, company, submitted, answers, false)
       });
@@ -216,27 +219,39 @@ function buildHtml_(name, email, company, submitted, answers, forMaaz) {
     if (!v) return;
     if (f.s !== last) {
       if (last) rows += '</table>';
-      rows += '<h3 style="background:#4f46e5;color:#fff;padding:8px 12px;border-radius:6px;margin:22px 0 6px;font-size:15px">' + esc_(f.s) + '</h3>'
-            + '<table style="border-collapse:collapse;width:100%">';
+      rows += '<h3 style="background:#0f172a;color:#ffffff;padding:9px 14px;border-radius:8px;margin:22px 0 8px;font-size:14px;letter-spacing:0.02em;">' + esc_(f.s) + '</h3>'
+            + '<table style="border-collapse:collapse;width:100%;margin-bottom:8px;">';
       last = f.s;
     }
-    rows += '<tr><td style="padding:8px;border-bottom:1px solid #e3e5ee;width:45%;vertical-align:top;color:#444">' + esc_(f.q) + '</td>'
-          + '<td style="padding:8px;border-bottom:1px solid #e3e5ee;vertical-align:top"><b>' + esc_(v) + '</b></td></tr>';
+    rows += '<tr><td style="padding:9px 10px;border-bottom:1px solid #e2e8f0;width:44%;vertical-align:top;color:#475569;font-size:13px;line-height:1.4;">' + esc_(f.q) + '</td>'
+          + '<td style="padding:9px 10px;border-bottom:1px solid #e2e8f0;vertical-align:top;color:#0f172a;font-size:13px;line-height:1.4;"><b>' + esc_(v) + '</b></td></tr>';
   });
   if (last) rows += '</table>';
-  const head = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:760px;margin:auto;color:#1c2033">'
-    + '<h2 style="margin:0 0 4px">New manpower agency requirements submission</h2>'
-    + '<p style="margin:0 0 16px;color:#6b7089">Prepared by Maaz Ali &middot; AI with Hammad</p>'
-    + '<table style="border-collapse:collapse;margin-bottom:18px">'
-    + '<tr><td style="padding:4px 12px 4px 0"><b>Name</b></td><td>' + esc_(name) + '</td></tr>'
-    + '<tr><td style="padding:4px 12px 4px 0"><b>Email</b></td><td>' + esc_(email) + '</td></tr>'
-    + '<tr><td style="padding:4px 12px 4px 0"><b>Company</b></td><td>' + esc_(company) + '</td></tr>'
-    + '<tr><td style="padding:4px 12px 4px 0"><b>Submitted</b></td><td>' + esc_(submitted) + '</td></tr>'
+
+  const titleText = forMaaz
+    ? '🚀 Form Filled: New Requirements Received'
+    : '📋 Manpower Agency Ledger System &ndash; Requirements Received';
+
+  const head = '<div style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;max-width:760px;margin:auto;color:#0f172a;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,0.05);">'
+    + '<div style="border-bottom:2px solid #0f172a;padding-bottom:14px;margin-bottom:18px;">'
+    + '<h2 style="margin:0 0 6px;color:#0f172a;font-size:20px;font-weight:700;">' + titleText + '</h2>'
+    + '<p style="margin:0;color:#64748b;font-size:13px;">Prepared by <strong>Maaz Ali</strong> &middot; Full-Stack Engineer &amp; Automation Specialist</p>'
+    + '</div>'
+    + '<table style="border-collapse:collapse;margin-bottom:18px;width:100%;background:#f8fafc;border-radius:8px;padding:12px;border:1px solid #e2e8f0;">'
+    + '<tr><td style="padding:6px 12px;color:#64748b;font-size:13px;width:25%;"><b>Client Name:</b></td><td style="padding:6px 12px;font-size:13px;color:#0f172a;"><b>' + esc_(name) + '</b></td></tr>'
+    + '<tr><td style="padding:6px 12px;color:#64748b;font-size:13px;"><b>Email:</b></td><td style="padding:6px 12px;font-size:13px;color:#0f172a;">' + esc_(email) + '</td></tr>'
+    + '<tr><td style="padding:6px 12px;color:#64748b;font-size:13px;"><b>Company:</b></td><td style="padding:6px 12px;font-size:13px;color:#0f172a;"><b>' + esc_(company) + '</b></td></tr>'
+    + '<tr><td style="padding:6px 12px;color:#64748b;font-size:13px;"><b>Submitted:</b></td><td style="padding:6px 12px;font-size:13px;color:#0f172a;">' + esc_(submitted) + '</td></tr>'
     + '</table>';
+
   const foot = forMaaz
-    ? 'The full answers are also attached as a JSON file.'
-    : 'Thank you for sharing your requirements. We will review them and get back to you.';
-  return head + rows + '<p style="color:#6b7089;font-size:12px;margin-top:20px">' + foot + '</p></div>';
+    ? '<div style="margin-top:24px;padding:14px;background:#f1f5f9;border-radius:8px;font-size:12px;color:#475569;">📎 Full structured answers are attached as a JSON file. Recorded into Google Sheet.</div>'
+    : '<div style="margin-top:24px;padding:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:13px;color:#166534;line-height:1.5;">'
+      + '<strong>✓ Submission Confirmed:</strong> Thank you for providing your requirements. Maaz Ali has received all details and will review the full operational specifications with you shortly.<br><br>'
+      + 'If you have any questions or additional details to share, feel free to reply directly to this email or connect on WhatsApp: <strong>+92 337 7233444</strong>.'
+      + '</div>';
+
+  return head + rows + foot + '</div>';
 }
 
 function esc_(s) {
