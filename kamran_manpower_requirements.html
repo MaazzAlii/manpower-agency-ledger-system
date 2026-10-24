@@ -954,6 +954,11 @@
           <button type="button" class="pill-btn" id="lang-en" onclick="setLang('en')">English</button>
           <button type="button" class="pill-btn" id="lang-ru" onclick="setLang('ru')">Roman Urdu</button>
         </div>
+        <div class="pill-group" role="group" aria-label="Reset form">
+          <button type="button" class="pill-btn" id="btn-clear-top" onclick="confirmResetForm()" title="Clear form answers" style="color:var(--accent,#d97706);font-size:0.84rem;gap:4px;">
+            <span>🗑️</span> <span id="lbl-clear-top">Clear</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -1008,11 +1013,11 @@
   </a>
 
   <!-- Success Modal (Pop-up after Submit) -->
-  <div id="modalOverlay" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeSuccessModal()">
+  <div id="modalOverlay" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeSuccessModal(false)">
     <div class="modal-card">
       <div class="modal-icon" style="font-size:3.2rem;margin-bottom:12px;">✅</div>
       <h3 class="modal-title" id="modalTitle">Requirements Submitted Successfully!</h3>
-      <p class="modal-sub" id="modalSub">Your answers have been securely received and recorded into the system.</p>
+      <p class="modal-sub" id="modalSub">Your answers have been securely received and recorded into the Google Sheet.</p>
       
       <div id="modalReceipt" style="background:var(--subtle,#f1f5f9);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:left;font-size:0.88rem;margin-bottom:20px;">
         <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
@@ -1033,7 +1038,14 @@
         </div>
       </div>
 
-      <button type="button" class="btn" style="width:100%;padding:14px;font-size:1rem;font-weight:600;border-radius:12px;" onclick="closeSuccessModal()">Done / مکمل</button>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button type="button" class="btn" style="width:100%;padding:13px;font-size:0.95rem;font-weight:600;border-radius:12px;" onclick="closeSuccessModal(false)">
+          ✏️ Keep &amp; Edit Answers / جوابات میں ترمیم
+        </button>
+        <button type="button" class="btn alt" style="width:100%;padding:11px;font-size:0.88rem;border-radius:12px;" onclick="confirmResetAndClose()">
+          🔄 Start New Form / نیا فارم شروع کریں
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1412,6 +1424,10 @@
       const ruBtn = $("lang-ru");
       if (enBtn) enBtn.classList.toggle("active", S.lang === "en");
       if (ruBtn) ruBtn.classList.toggle("active", S.lang === "ru");
+      const clearTopLbl = $("lbl-clear-top");
+      if (clearTopLbl) {
+        clearTopLbl.textContent = S.lang === "ru" ? "Saaf" : "Clear";
+      }
       const total = STEPS.length + 1;
       const isReview = S.step === REVIEW_INDEX;
       $("bar").style.width = ((S.step + 1) / total * 100) + "%";
@@ -1602,7 +1618,7 @@
       rs.type = "button";
       rs.style.fontSize = "0.85rem";
       rs.addEventListener("click", () => {
-        if (confirm(t.resetConfirm)) { localStorage.removeItem(KEY); S = FRESH(); render(true); setSave(""); }
+        confirmResetForm();
       });
       resetWrap.append(rs);
       root.append(resetWrap);
@@ -1737,12 +1753,37 @@
       m.style.display = "flex";
     }
 
-    function closeSuccessModal() {
+    function confirmResetForm() {
+      const t = T();
+      if (confirm(t.resetConfirm || "Delete all saved answers on this device?")) {
+        localStorage.removeItem(KEY);
+        S = FRESH();
+        render(true);
+        setSave("");
+        showBanner("info", S.lang === "ru" ? "Form dobara shuru kar diya gaya hai. Tamam jawabat saaf ho gaye." : "Form reset. All answers cleared.");
+      }
+    }
+
+    function confirmResetAndClose() {
+      const t = T();
+      if (confirm(t.resetConfirm || "Delete all saved answers on this device?")) {
+        closeSuccessModal(true);
+      }
+    }
+
+    function closeSuccessModal(clearState = false) {
       const m = $("modalOverlay");
       if (m) m.style.display = "none";
-      localStorage.removeItem(KEY);
-      S = FRESH();
-      render(true);
+      if (clearState) {
+        localStorage.removeItem(KEY);
+        S = FRESH();
+        render(true);
+        setSave("");
+      } else {
+        showBanner("ok", S.lang === "ru"
+          ? "✓ Requirements Google Sheet mein record ho chuki hain. Aapke jawabat mehfooz hain taake aap inhein kisi bhi waqt tabdeel ya re-submit kar sakein."
+          : "✓ Requirements logged to Google Sheet. Your answers remain loaded so you can review or adjust them anytime.");
+      }
     }
 
     async function submitRequirements() {
